@@ -193,7 +193,7 @@ return false;
 if($_REQUEST['name'] && $_REQUEST['category']) {
 
     $mysqli = db::get_mysqli();
-    //mysqli_set_charset($mysqli, "utf8");
+    mysqli_set_charset($mysqli, "utf8");
     $i = 0;
     
     $name = $_GET['name'];
