@@ -25,4 +25,5 @@
     require_once("tags/routes.php");
     require_once("ts3/routes.php");
     require_once("calendar/routes.php");
+    require_once("user/routes.php");
 ?>

@@ -7,6 +7,8 @@
         private function __construct() {
             require_once(__DIR__."/../../../Flotte/inc/mysql.inc.php");
             self::$_mysqli = new_mysql_co();
+
+            mysqli_set_charset(self::$_mysqli, "utf8");
         }
 
         public static function get_mysqli() {
