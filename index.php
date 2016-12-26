@@ -6,6 +6,8 @@
     require_once("required/phpbb.php");
     require_once("required/juliet.php");
     require_once("required/response.php");
+    require_once("config/ts3.conf.php");
+    require_once("config/mysql.conf.php");
 
     header("Access-Control-Allow-Origin: https://juliet.starcitizen.fr");
     header("Access-Control-Allow-Credentials: true");
@@ -21,4 +23,6 @@
 
     require_once("rights/routes.php");
     require_once("tags/routes.php");
+    require_once("ts3/routes.php");
+    require_once("calendar/routes.php");
 ?>

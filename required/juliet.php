@@ -49,6 +49,15 @@ class JULIET {
         $output = implode(',',$output);
         return $output;
     }
+
+    public static function get_main_fleet_info($id) {
+        $mysqli = db::get_mysqli();
+
+        $sql = "SELECT * FROM star_fleet WHERE id_forum = '{$id}' LIMIT 1";
+        $d = $mysqli->query($sql);
+
+        return $d->fetch_assoc();
+    }
 }
 
 ?>

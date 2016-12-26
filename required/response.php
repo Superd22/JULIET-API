@@ -8,8 +8,7 @@ class Response {
         "error" => false,
         );
         
-        if($non_blocking_error) $return["msg"] = self::utf8ize($non_blocking_error);
-        
+        if($non_blocking_error) $return["msg"] = $non_blocking_error;
         return json_encode($return);
     }
     
@@ -18,7 +17,7 @@ class Response {
         $return = array(
         "data"  => false,
         "error" => true,
-        "msg"   => self::utf8ize($error_message),
+        "msg"   => $error_message,
         );
         
         return json_encode($return);
