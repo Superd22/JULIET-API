@@ -13,7 +13,8 @@
     header("Access-Control-Allow-Credentials: true");
     header('Access-Control-Allow-Headers: Content-Type');
 
-    error_reporting(-1);
+    error_reporting(E_ALL);
+    ini_set("display_errors", "1");
     $r3 = APIRouter::get_router();
 
     $r3->any("/", function() {
@@ -26,4 +27,6 @@
     require_once("ts3/routes.php");
     require_once("calendar/routes.php");
     require_once("user/routes.php");
+    require_once("groups/routes.php");
+    require_once("common/routes.php");
 ?>

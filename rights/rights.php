@@ -11,8 +11,10 @@ class Rights implements Routable {
     }
 
     public function get($right) {
+        $user_id = $_GET["user_id"];
+        $target = $_GET["target"];
         try {
-            $return = Response::json_response(Rights\Main::has_right($right));
+            $return = Response::json_response(Rights\Main::has_right($right, $user_id, $target));
             return $return;
         } catch(\Exception $e) {
             if($e->getCode() === 0) return Response::json_error($e->getMessage());

@@ -35,8 +35,8 @@ class Main {
       return $try;
     }
   }
-  public static function user_can($right) {
-    return self::has_right($right);
+  public static function user_can($right, $user_id = 0, $target = false) {
+    return self::has_right($right, $user_id, $target);
   }
 
   public static function has_right($right, $user_id = 0, $target = false) {
@@ -59,7 +59,20 @@ class Main {
         return SELF::can_admin_tag($user_id, $target);
       case "USER_CAN_SEE_JULIET":
         return SELF::user_can_see_juliet($user_id);
+      case "USER_IS_ADMIN": 
+        return SELF::is_admin($user_id);
+      case "HYDRATE_USER":
+        return SELF::hydrate_ju_user();
     }
+  }
+
+  public static function hydrate_ju_user() {
+    $user_id = self::handle_user_id(0);
+
+    return [
+            "userId"  => $user_id,
+            "isAdmin" => self::is_admin($user_id),
+           ];
   }
 
   public static function can_admin_event($user_id, $target) {
@@ -90,15 +103,15 @@ class Main {
   }
 
   public static function can_admin_tag($user_id, $target, $deep = false) {
+    // The TAG ID.
     $target = (integer) $target;
+    
+    if($target == 0) return false;
+    if(!$deep) $user_id = SELF::handle_user_id($user_id);
+    if(SELF::is_admin($user_id)) return true;
+    if($deep && \JULIET\api\Tags\helper\Tag::user_has_tag($user_id, $target)) return true;
 
-    if(!$deep) {
-      $user_id = SELF::handle_user_id($user_id);
-      if(SELF::is_admin($user_id)) return true;
-    }
-
-    if(\JULIET\api\Tags\helper\Tag::user_has_tag($user_id, $target)) return true;
-    else return can_admin_tag($user_id, \JULIET\api\Tags\helper\Tag::get_rights_from($target), true);
+    return can_admin_tag($user_id, \JULIET\api\Tags\helper\Tag::get_rights_from($target), true);
   }
 
   private static function has_admin_on_player($user_id = 0, $target = 0) {
@@ -110,12 +123,12 @@ class Main {
     $user_id = SELF::handle_user_id($user_id);
     $sql = "SELECT * FROM testfo_user_group WHERE user_id='{$user_id}'";
 
-    $r = $this->db->query($sql);
+    $r = self::mysqli()->query($sql);
     while($ad = $r->fetch_assoc()) {
 			$groups[] = $ad['group_id'];
 		}
-
-    if (isset($groups) && (in_array(GROUP_ADMIN,$groups) || in_array(GROUP_GO,$groups) || in_array(GROUP_CHEF_SECTOR,$groups))) return true;
+    
+    if (isset($groups) && (in_array(self::GROUP_ADMIN,$groups) || in_array(self::GROUP_GO,$groups) || in_array(self::GROUP_CHEF_SECTOR,$groups))) return true;
     return false;
   }
 

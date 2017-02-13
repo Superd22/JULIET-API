@@ -7,7 +7,7 @@ require_once(__DIR__."/helper/Main.php");
 use Respect\Rest\Routable;
 use JULIET\api\user;
 
-class Users implements Routable {
+class Ranks implements Routable {
     
     function __construct() {
     }
@@ -30,12 +30,8 @@ class Users implements Routable {
     
     private function switch_get($filename) {
         switch($filename) {
-            case "GET_USER_INFO":
-                return new user\aUser((integer) $_GET['id']);
-            break;
-
-            case "GET_USER_FICHE":
-                return new user\aUser((integer) $_GET['id'], true);
+            case "GET_FLEET_STAR":
+                return user\aRank::get_fleet_star((integer) $_GET['fleet'], (integer) $_GET['star']);
             break;
         }
     }

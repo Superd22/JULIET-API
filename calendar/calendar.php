@@ -1,5 +1,7 @@
 <?php namespace JULIET\api;
 
+    require_once(__DIR__."/helper/event.php");
+    require_once(__DIR__."/helper/summary.php");
 
 use Respect\Rest\Routable;
 

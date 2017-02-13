@@ -16,7 +16,6 @@ class Tags implements Routable {
     
     public function get($filename) {
         if(strpos($filename, "php") !== false) {
-
             require_once(__DIR__."/legacy/".str_replace("php", ".php", $filename));
         }
         else $this->switch_get($filename);
@@ -30,32 +29,37 @@ class Tags implements Routable {
     }
 
     private function switch_get($path) {
+        error_reporting(-1);
         try {
+            $_GET['user_id'] = Rights\Main::handle_user_id($_GET['user_id']);
             switch($path) {
                 case "create":
                     $return = Tag::create($_GET["name"]);
                 break;
                 case "update":
                     $tag = new Tag($_GET['id']);
-                    $return = $tag->update($_GET);
+                    if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_GET["id"])) $return = $tag->update($_GET);
+                    else throw new \Exception("USER_NO_RIGHTS");
                 break;
                 case "affect":
                     $tag = new Tag($_GET['id']);
-                    $_GET['user_id'] = Rights\Main::handle_user_id($_GET['user_id']);
-                    print_r($_GET);
-                    $return = $tag->affect($_GET['user_id']);
+                    if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_GET["id"])) $return = $tag->affect($_GET['user_id']);
+                    else throw new \Exception("USER_NO_RIGHTS");
                 break;
                 case "unaffect":
                     $tag = new Tag($_GET['id']);
-                    $return = $tag->unaffect($_GET['user_id']);
+                    if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_GET["id"])) $return = $tag->unaffect($_GET['user_id']);
+                    else throw new \Exception("USER_NO_RIGHTS");
                 break;
                 case "delete";
                     $tag = new Tag($_GET['id']);
-                    $return = $tag->remove();
+                    if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_GET["id"])) $return = $tag->remove();
+                    else throw new \Exception("USER_NO_RIGHTS");
                 break;
                 case "migrate";
                     $tag = new Tag((integer) $_GET['id']);
-                    $return = $tag->migrate((integer) $_GET['target']);
+                    if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_GET["id"])) $return = $tag->migrate((integer) $_GET['target']);
+                    else throw new \Exception("USER_NO_RIGHTS");
                 break;
                 case "getNameById";
                     $return = Tag::get_name_by_id($_GET['id']);

@@ -12,11 +12,11 @@ if(Rights::user_can("USER_IS_SIBYLLA")) {
     // Récupération de si oui où non on désire un membre en particulier
     $userid = $_POST['user'];
     $shipid = $_POST['ship'];
-    
+
     // Si on veut un ship.
     if($shipid > 0) $userid = 0;
     // Si on veut le membre courant
-    if($userid == 1) $userid = $user->data['user_id'];
+    $userid = Rights::handle_user_id($userid);
     
     // SI on veut récupérer uniquement les T.A.G.S de user
     $where = "";
@@ -57,7 +57,7 @@ if(Rights::user_can("USER_IS_SIBYLLA")) {
         echo $mysqli->error;
         
         while($ship = $ships->fetch_assoc()) {
-            $oneship = array("id" => $ship['id'],"name" => $ship['name'],"img" => $ship['ico'], "client_id"=>$i , "cat" =>"ship", "type" => 0);
+            $oneship = array("id" => $ship['id'],"name" => $ship['name'],"img" => $ship['ico'], "client_id"=>$i , "cat" =>"ship", "type" => 0, "restricted" => 1);
             
             $dada = $mysqli->query('SELECT COUNT(*) FROM star_fleet WHERE FIND_IN_SET("'.$oneship['id'].'", ships)');
             $ct = $dada->fetch_assoc();
@@ -72,7 +72,7 @@ if(Rights::user_can("USER_IS_SIBYLLA")) {
         $ranks = $mysqli->query('SELECT ID, name, url FROM star_rank '.$where2);
         $theRanks = array();
         while ($rank = $ranks->fetch_assoc()) {
-            $onerank = array("id" => $rank['ID'], "name" => utf8_encode($rank['name']), "client_id" => $i, "img" => utf8_encode($rank['url']), "cat" => "rank", "type" => 0);
+            $onerank = array("id" => $rank['ID'], "name" => utf8_encode($rank['name']), "client_id" => $i, "img" => utf8_encode($rank['url']), "cat" => "rank", "type" => 0, "restricted" => 1);
             
             $count = $mysqli->query('SELECT COUNT(*) FROM star_fleet WHERE grade="'.$rank['ID'].'"');
             $ct = $count->fetch_assoc();

@@ -24,6 +24,7 @@ Phpbb::make_phpbb_env();
                 
                 if($tag) {
                 $tag["restricted"] = (integer) $tag["restricted"];
+                $tag["cat"] = "tag";
                     // Récupération des joueurs qui possèdent le tags.
                 $players = $mysqli->query("SELECT id,id_forum,fleet FROM star_fleet,star_tags_af WHERE tag_id='{$tag['id']}' AND user_id = id_forum");
                 while($player = $players->fetch_assoc()) {
@@ -59,7 +60,7 @@ Phpbb::make_phpbb_env();
             $ship = $ships->fetch_assoc();
             
             // Construction du "TAG" afférant au vaisseau
-            $oneship = array("id" => $ship['id'],"name" => $ship['name'],"img" => $ship['ico'],"type" =>"ship");
+            $oneship = array("id" => $ship['id'],"name" => $ship['name'],"img" => $ship['ico'],"cat" =>"ship");
             
             // Récupération des vaisseaux enfants.
             $allShips = array($oneship);
@@ -112,7 +113,7 @@ Phpbb::make_phpbb_env();
     case "rank":
         $ranks = $mysqli->query('SELECT ID, name, url FROM star_rank WHERE name="'.$name.'"');
         $rank = $ranks->fetch_assoc();
-        $onerank = array("id" => $rank['ID'], "name" => utf8_encode($rank['name']), "img" => utf8_encode($rank['url']), "type" => "rank");
+        $onerank = array("id" => $rank['ID'], "name" => utf8_encode($rank['name']), "img" => utf8_encode($rank['url']), "cat" => "rank");
         
         $players = $mysqli->query('SELECT id,id_forum,fleet FROM star_fleet WHERE grade="'.$rank['ID'].'"');
         while($player = $players->fetch_assoc()) {

@@ -164,6 +164,7 @@ class Tag {
             rights_from='{$rights_from}'
             WHERE id = '{$this->id}'
             ";
+
             return $this->db->query($sql);
         }
         else throw new \Exception("CANT_UPDATE_SPECIAL_TAGS");

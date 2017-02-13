@@ -1,13 +1,13 @@
-<?php namespace JULIET\api;
+<?php namespace JULIET\api\groups;
 
-require_once(__DIR__."/helper/User.php");
-require_once(__DIR__."/helper/Rank.php");
-require_once(__DIR__."/helper/Main.php");
+require_once(__DIR__."/helper/group.php");
+require_once(__DIR__."/helper/main.php");
 
 use Respect\Rest\Routable;
 use JULIET\api\user;
+use JULIET\api\Response;
 
-class Users implements Routable {
+class Groups implements Routable {
     
     function __construct() {
     }
@@ -30,12 +30,8 @@ class Users implements Routable {
     
     private function switch_get($filename) {
         switch($filename) {
-            case "GET_USER_INFO":
-                return new user\aUser((integer) $_GET['id']);
-            break;
-
-            case "GET_USER_FICHE":
-                return new user\aUser((integer) $_GET['id'], true);
+            case "LIST_GROUPS":
+                return helper\Main::get_all_groups();
             break;
         }
     }
