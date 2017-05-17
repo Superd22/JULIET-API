@@ -24,8 +24,12 @@ class Common implements Routable {
     public function switch_get($where) {
         switch($where) {
             case "UserSearch":
-            return Main::searchUser($_GET["f"]);
+                return Main::searchUser($_GET["f"]);
             break;
+            case "getUserById":
+                return Main::getUsersById(explode(',',$_GET["ids"]));
+            break;
+
         }
     }
 }

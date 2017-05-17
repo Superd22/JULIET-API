@@ -1,15 +1,13 @@
 <?php namespace JULIET\api;
 
-require_once(__DIR__."/helper/tag.php");
-require_once(__DIR__."/helper/rank.php");
-require_once(__DIR__."/helper/ship.php");
-require_once(__DIR__."/helper/tags.php");
-
+require_once(__DIR__."/helpers/Ship.php");
+require_once(__DIR__."/models/Ship.php");
+require_once(__DIR__."/models/ShipType.php");
 use Respect\Rest\Routable;
-use JULIET\api\Tags\helper\tag;
+use JULIET\api\Tags\helpers\Ship;
 //use JULIET\API\Rights\Main as Rights;
 
-class Tags implements Routable {
+class Ships implements Routable {
     
     public function __construct() {
     }
@@ -33,7 +31,8 @@ class Tags implements Routable {
             if(!isset($_GET['user_id'])) $_GET['user_id'] = 0;
             $_GET['user_id'] = Rights\Main::handle_user_id($_GET['user_id']);
             switch($path) {
-                case "create":
+                case "getPlayerHangar":
+                if
                     $return = Tag::create($_GET["name"]);
                 break;
                 case "update":
@@ -51,20 +50,20 @@ class Tags implements Routable {
                     if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_GET["id"])) $return = $tag->unaffect($_GET['user_id']);
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
-                case "delete":
+                case "delete";
                     $tag = new Tag($_GET['id']);
                     if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_GET["id"])) $return = $tag->remove();
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
-                case "migrate":
+                case "migrate";
                     $tag = new Tag((integer) $_GET['id']);
                     if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_GET["id"])) $return = $tag->migrate((integer) $_GET['target']);
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
-                case "getNameById":
+                case "getNameById";
                     $return = Tag::get_name_by_id($_GET['id']);
                 break;
-                case "searchTags":
+                case "searchTags";
                     $return = Tags\helper\Tags::search_tag($_GET['f'],$_GET['all']);
                 break;
             }

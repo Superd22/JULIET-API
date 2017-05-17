@@ -91,7 +91,7 @@ class Main {
   }
 
   public static function user_can_see_juliet($user_id) {
-    if(!self::is_logged_in($user_id)) {
+    if(!self::is_logged_in()) {
       throw new \Exception("USER_NOT_LOGGED_IN");
       return false;
       }

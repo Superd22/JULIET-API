@@ -26,9 +26,9 @@ class Summary {
     global $user;
     $mysqli = db::get_mysqli();
     if($user_id === 0) $user_id = $user->data['user_id'];
-    if($eId instanceof Event) {$event = $eId; $eId = $event['id'];}
+    if($eId instanceof Event) {$event = $eId; $eId = $event->id;}
     else {
-      $event = Event::get_event($eId);
+      $event = Event::get_single_event($eId);
     }
 
 
@@ -38,7 +38,7 @@ class Summary {
     $invit = $try->fetch_assoc();
 
     // On vérifie le statut de l'event.
-    if($event['private'] == 2) {
+    if($event->private == 2) {
       // L'event est privé, il faut qu'on soit invité
       if(!$invit["id"]) {
         // On a pas d'invitation au nom du joueur, on check le groupe.
@@ -60,7 +60,7 @@ class Summary {
     // Si le joueur pouvait s'inscrire et qu'il l'a fait
     if($can && $invit["id"]) {
       $asked = true;
-      if($invit['confirm'] == 1 OR $event['private'] == 0) $isIn = true;
+      if($invit['confirm'] == 1 OR $event->private == 0) $isIn = true;
     }
 
     return new Summary(array("EVENT" => $event, "INVIT" => $invit, "GROUP" => $gInv, "canSendInv" => $can, "IsIn" => $isIn, "Asked" => $asked));

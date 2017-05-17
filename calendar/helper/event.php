@@ -3,18 +3,23 @@
 use JULIET\api\Phpbb;
 use JULIET\api\db;
 use JULIET\api\Response;
+use JULIET\api\Encoding;
 use JULIET\api\Rights\Main as Rights;
 
 class Event {
-    protected $id;
-    protected $start, $end, $autho, $perm, $private, $title, $text, $del, $membersMax, $topic;
-    protected $invitations;
+    public $id;
+    public $start, $end, $author, $perm, $private, $title, $text, $del, $membersMax, $topic;
+    public $invitations;
 
     function __construct($id) {
         if(is_numeric($id)) $this->id = $id;
         elseif(isset($id['id']) && isset($id["title"])) 
             foreach($id as $pp => $val)
-                $this->{$pp} = $val; 
+                $this->{$pp} = $val;
+        else throw new \Exception("WRONG EVENT CONSTRUCTOR"); 
+
+        $this->title = Encoding::fixUTF8($this->title);
+        $this->text = Encoding::fixUTF8($this->text);
     }
 
     public static function create_event($payload) {
@@ -126,6 +131,8 @@ class Event {
         $this->invitations['members'] = $membrs;
         $this->invitations['invits'] = $rsvp;
         $this->invitations['tags'] = $tags;
+
+        return $this;
     }
 
 }

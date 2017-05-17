@@ -27,5 +27,40 @@ class Main {
       return $q->fetch_all(MYSQLI_ASSOC);
   }
 
+    public static function getUsersById($ids) {
+        function fetchUserById($id) {
+            $myqsli = db::get_mysqli();
+            $id = (integer) $id;
+
+            $sql = "SELECT username, user_id as id FROM testfo_users WHERE user_id = '{$id}' LIMIT 1";
+            $q = $myqsli->query($sql);
+
+            $user = $q->fetch_assoc();
+            $user['avatar'] = Main::get_user_avatar($user['id']);
+            if($user["username"]) return $user;
+            else return false;
+        }
+
+        $r = [];
+        foreach($ids as $id)
+            $r[] = fetchUserById($id);
+
+        return $r;   
+    }
+
+    public static function get_user_avatar($user_id) {
+        $mysqli = db::get_mysqli();
+        $id = (integer) $user_id;
+    
+        $sql = "SELECT user_avatar,user_avatar_type from testfo_users WHERE user_id='{$id}' LIMIT 1";
+        $d = $mysqli->query($sql);
+
+        $avatar = $d->fetch_assoc();
+
+        if($avatar['user_avatar_type'] == "avatar.driver.remote") return $avatar['user_avatar'];
+        elseif(!empty($avatar['user_avatar'])) return "https://www.starcitizen.fr/Forum/download/file.php?avatar=".$avatar['user_avatar'];
+        return "https://starcitizen.fr/Forum/images/avatars/gallery/Personnages/uee2.png";
+    }
+
 
 }

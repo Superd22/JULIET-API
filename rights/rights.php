@@ -11,6 +11,7 @@ class Rights implements Routable {
     }
 
     public function get($right) {
+        error_reporting(0);
         $user_id = $_GET["user_id"];
         $target = $_GET["target"];
         try {
