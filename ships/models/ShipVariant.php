@@ -5,20 +5,18 @@ use JULIET\api\db;
 use JULIET\api\Response;
 use JULIET\api\Rights\Main as Rights;
 
-class ShipType {
+class ShipVariant {
     public $id;
+    public $ship_id;
+    public $ship_type_id;
     public $name;
-    public $type;
-    public $ico;
-    public $parent;
     
     public function __construct($ship) {
         if($ship !== null && $ship['id'] !== null) {
-            $this->id     = (integer) $ship['id'];
-            $this->name   = $ship['name'];
-            $this->type   = $ship['type'];
-            $this->ico    = $ship['ico'];
-            $this->parent = (integer) $ship['parent'];
+            $this->id      = (integer) $ship['id'];
+            $this->ship_id = (integer) $ship['ship_id'];
+            $this->ship_type_id = (integer) $ship['ship_type_id'];
+            $this->name    = $ship['name'];
         }
         elseif($ship !== null && is_numeric($ship) && (integer) $ship > 0) {
             $this->id      = (integer) $ship;

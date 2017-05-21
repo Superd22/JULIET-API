@@ -63,6 +63,10 @@ class Main {
         return SELF::is_admin($user_id);
       case "HYDRATE_USER":
         return SELF::hydrate_ju_user();
+      case "USER_CAN_EDIT_SHIP":
+        return SELF::user_can_edit_ship($user_id, $target);
+      case "USER_CAN_EDIT_SHIP_TAGS":
+        return SELF::user_can_edit_ship_tags($user_id, $target);
     }
   }
 
@@ -88,6 +92,19 @@ class Main {
     $test = array_merge($test, explode(',',$ri['perm']) );
 
     return in_array($user_id,$test);
+  }
+
+  public static function user_can_edit_ship($user_id, $target) {
+    $user_id = SELF::handle_user_id($user_id);
+    if(SELF::is_admin($user_id)) return true;
+
+    $ship = new \JULIET\api\Ships\helpers\Ship($target);
+
+    return ($ship->get_owner() == $user_id);
+  }
+
+  public static function user_can_edit_ship_tags($user_id, $target) {
+    return self::user_can_edit_ship($user_id, $target);
   }
 
   public static function user_can_see_juliet($user_id) {
@@ -116,7 +133,10 @@ class Main {
 
   private static function has_admin_on_player($user_id = 0, $target = 0) {
     if(SELF::is_admin($user_id)) return true;
-    else return ($user_id === $target);
+
+    $user_id = self::handle_user_id($user_id);
+    $target = self::handle_user_id($target);
+    return ($user_id == $target);
   }
 
   private static function is_admin($user_id = 0) {

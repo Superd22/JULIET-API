@@ -18,5 +18,8 @@ class Ship {
             $this->type_id = (integer) $ship['type_id'];
             $this->owner   = (integer) $ship['owner'];
         }
+        elseif($ship !== null && is_numeric($ship) && (integer) $ship > 0) {
+            $this->id      = (integer) $ship;
+        }
     }
 }

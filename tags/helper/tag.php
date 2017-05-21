@@ -15,7 +15,7 @@ class Tag {
     public $parent;
     public $rights_from;
     public $cat = "tag";
-    
+    public $herited_from;
     
     protected $tag_id;
     protected $tag_category;
@@ -36,6 +36,7 @@ class Tag {
     }
     
     public function get_count() {
+        $mysqli = db::get_mysqli();
         $ct = $mysqli->query('SELECT COUNT(*) FROM star_tags_af WHERE tag_id = "'.$this->id.'" ');
         $ct = $ct->fetch_assoc();
         
@@ -43,18 +44,35 @@ class Tag {
         
         return $this->count;
     }
+
+    public function set_heritage($id, $type) {
+        $this->herited_from = array( "id" => (integer) $id, "target_type" => $type );
+    }
     
-    public static function get_all_tags($user_id = null, $ship_id = null) {
+    public static function get_all_tags($user_id = null, $ship_id = null, $ship_type_id = null, $ship_template_id = null, $ressource_id = null) {
         Phpbb::make_phpbb_env();
         global $user;
         if($userid == 1) $userid = $user->data['user_id'];
         $where = "";
         
-        if($shipid > 0) {
-            $where = "HAVING id in (SELECT tag_id FROM star_tags_af WHERE ship_id='".$userid."')";
+        $mysqli = db::get_mysqli();
+        if ($user_id > 0) {
+            $where = "HAVING id in (SELECT tag_id FROM star_tags_af WHERE user_id='".(integer) $userid."')";
         }
-        elseif ($userid > 0) {
-            $where = "HAVING id in (SELECT tag_id FROM star_tags_af WHERE user_id='".$userid."')";
+        elseif($ship_id > 0) {
+            $where = "HAVING id in (SELECT tag_id FROM star_tags_af WHERE ship_id='".(integer) $ship_id."')";
+            $herit = new \JULIET\api\Ships\helpers\Ship($ship_id);
+        }
+        elseif($ship_type_id > 0) {
+            $where = "HAVING id in (SELECT tag_id FROM star_tags_af WHERE shipType_id='".(integer) $ship_type_id."')";
+            $herit = new \JULIET\api\Ships\helpers\ShipType($ship_id);
+        }
+        elseif($ship_template_id > 0) {
+            $where = "HAVING id in (SELECT tag_id FROM star_tags_af WHERE ship_variant_id='".(integer) $ship_type_id."')";
+            $herit = new \JULIET\api\Ships\helpers\ShipVariant($ship_id);
+        }
+        elseif($ressource_id > 0) {
+            $where = "HAVING id in (SELECT tag_id FROM star_tags_af WHERE ressource_id='".(integer) $ressource_id."')";
         }
         
         $return = [];
@@ -62,12 +80,38 @@ class Tag {
         $tags = $mysqli->query('SELECT * FROM star_tags '.$where.' ORDER BY id DESC');
         while($list = $tags->fetch_assoc()) {
             $tag = new Tag($list);
-            if($tag->get_count() > 0) $return[] = $tag;
+            // if($tag->get_count() > 0) $return[] = $tag;
+            // Prevent doubles
+            $return[$tag->id] = $tag;
+        }
+
+        // [HERITAGE] LAND
+        $herited_tags = $herit->get_herited_tags();
+        foreach($herited_tags as $tag) {
+            $return[$tag->id] = $tag;
         }
         
-        return $return;
+        
+        return array_values($return);
     }
 
+
+    
+    public static function get_tags_from_ship(\JULIET\api\Ships\models\Ship $ship) {
+        $shipid = (integer) $ship->id;
+        return self::get_all_tags(null,$shipid);
+    }
+    
+    public static function get_tags_from_ship_variant(\JULIET\api\Ships\models\ShipVariant $ship) {
+        $shipid = (integer) $ship->id;
+        return self::get_all_tags(null,null,null,$shipid);
+    }
+    
+    public static function get_tags_from_ship_model(\JULIET\api\Ships\models\ShipType $ship) {
+        $shiptypeid = (integer) $ship->id;
+        return self::get_all_tags(null,null,$shipid);
+    }
+    
     public static function get_name_by_id($id) {
         if(!($id > 0)) throw new \Exception("INVALID_ID");
         $id = (integer) $id;
@@ -75,10 +119,10 @@ class Tag {
         
         $sql = "SELECT name from star_tags WHERE id='{$id}'";
         $test = $mysql->query($sql);
-
+        
         return $test->fetch_assoc();
     }
-
+    
     public static function get_tags_from_user($user_id) {
         $user_id = (integer) $user_id;
         return get_all_tags($user_id);
@@ -96,7 +140,7 @@ class Tag {
             
             // Remove parent / rights from / gettable from
             $this->update_heritage();
-
+            
             return true;
         }
     }
@@ -129,18 +173,18 @@ class Tag {
                 return self::get_single_tag((integer) $new_id);
             }
         }
-        else throw new \Exception("NEED_MIGRATE_TARGET");       
-    }
-
+        else throw new \Exception("NEED_MIGRATE_TARGET");
+        }
+    
     public static function get_single_tag($tag) {
         $mysql =  db::get_mysqli();
         if(is_numeric($tag)) $where = "WHERE id='{$tag}'";
         elseif(is_string($tag)) $where = "WHERE name='{$mysql->real_escape_string($tag)}'";
         else {throw new \Exception("WRONG_TAG_ARG"); return false;}
-
+        
         $sql = "SELECT * FROM star_tags ".$where;
         $q = $mysql->query($sql);
-
+        
         return new Tag($q->fetch_assoc());
     }
     
@@ -164,7 +208,7 @@ class Tag {
             rights_from='{$rights_from}'
             WHERE id = '{$this->id}'
             ";
-
+            
             return $this->db->query($sql);
         }
         else throw new \Exception("CANT_UPDATE_SPECIAL_TAGS");
@@ -212,9 +256,13 @@ class Tag {
         return new Tag($id['id']);
     }
     
+    
+    /**
+    * Affect the current Tag to the user
+    */
     public function affect($user_id) {
         $user_id = (integer) $user_id;
-
+        
         if($this->is_normal_tag() && $user_id > 0) {
             $sql = "INSERT INTO star_tags_af
             (tag_id, user_id)
@@ -228,6 +276,61 @@ class Tag {
         $user_id = (integer) $user_id;
         if($this->is_normal_tag()) {
             $sql = "DELETE FROM star_tags_af WHERE user_id='{$user_id}' AND tag_id='{$this->id}'";
+            return $this->db->query($sql);
+        }
+    }
+    
+    /**
+    * Affect to ship
+    */
+    public function affect_ship(JULIET\api\Ships\models\ShipType $ship) {
+        $ship_id = (integer) $ship->id;
+        
+        if($this->is_normal_tag() && $ship_id > 0) {
+            $sql = "INSERT INTO star_tags_af
+            (tag_id, ship_id)
+            VALUES ('{$this->id}', '{$ship_id}')";
+            return $this->db->query($sql);
+        }
+        
+        return false;
+    }
+    
+    /**
+    * Un affects current tag to the ship
+    */
+    public function unaffect_ship(JULIET\api\Ships\models\ShipType $ship) {
+        $ship_id = (integer) $ship->id;
+        if($this->is_normal_tag()) {
+            $sql = "DELETE FROM star_tags_af WHERE ship_id='{$ship_id}' AND tag_id='{$this->id}'";
+            return $this->db->query($sql);
+        }
+    }
+    
+    
+    /**
+    * Affect to ship
+    */
+    public function affect_ship_model(JULIET\api\Ships\models\Ship $ship) {
+        $ship_id = (integer) $ship->id;
+        
+        if($this->is_normal_tag() && $ship_id > 0) {
+            $sql = "INSERT INTO star_tags_af
+            (tag_id, shipType_id)
+            VALUES ('{$this->id}', '{$ship_id}')";
+            return $this->db->query($sql);
+        }
+        
+        return false;
+    }
+    
+    /**
+    * Un affects current tag to the ship
+    */
+    public function unaffect_ship_model(JULIET\api\Ships\models\Ship $ship) {
+        $ship_id = (integer) $ship->id;
+        if($this->is_normal_tag()) {
+            $sql = "DELETE FROM star_tags_af WHERE shipType_id='{$ship_id}' AND tag_id='{$this->id}'";
             return $this->db->query($sql);
         }
     }
