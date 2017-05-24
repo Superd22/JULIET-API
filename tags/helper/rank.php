@@ -12,7 +12,7 @@ class TagRank extends Tag {
         parent::__construct($rank, "rank");
     }
     
-    public static function get_all_tags($user_id = null, $ship_id = null, $ship_type_id = null, $ressource_id = null) {
+    public static function get_all_tags($user_id = null, $ship_id = null, $ship_type_id = null, $ship_template_id = null, $ressource_id = null) {
         Phpbb::make_phpbb_env();
         global $user;
         if($userid == 1) $userid = $user->data['user_id'];

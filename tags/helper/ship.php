@@ -12,7 +12,7 @@ class TagShip extends Tag {
         parent::__construct($ship, "ship");
     }
     
-    public static function get_all_tags($user_id = null, $ship_id = null, $ship_type_id = null, $ressource_id = null) {
+    public static function get_all_tags($user_id = null, $ship_id = null, $ship_type_id = null, $ship_template_id = null, $ressource_id = null) {
         Phpbb::make_phpbb_env();
         global $user;
         

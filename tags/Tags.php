@@ -1,5 +1,6 @@
 <?php namespace JULIET\api;
 
+require_once(__DIR__."/model/tagTarget.php");
 require_once(__DIR__."/helper/tag.php");
 require_once(__DIR__."/helper/rank.php");
 require_once(__DIR__."/helper/ship.php");
@@ -37,6 +38,22 @@ class Tags implements Routable {
             if(!isset($_REQUEST['user_id'])) $_REQUEST['user_id'] = 0;
             $_REQUEST['user_id'] = Rights\Main::handle_user_id($_REQUEST['user_id']);
             switch($path) {
+                /**
+                * SINGLE TAG ADMINISTRATION
+                */
+                case "get":
+                //error_reporting(-1);
+                    if(Rights\Main::user_can("USER_CAN_SEE_JULIET")) {
+                        if(isset($_REQUEST['cat']) && !empty($_REQUEST['cat'])) $cat = (string) $_REQUEST['cat'];
+                        else $cat = "tag";
+                        switch($cat) {
+                            case "tag":
+                                $return = Tag::get_tag_info($_REQUEST["name"], $_REQUEST['all']);
+                            break;
+                        }
+                    }
+                    else throw new \Exception("USER_NO_RIGHTS");
+                break;
                 case "create":
                     $return = Tag::create($_REQUEST["name"]);
                 break;
@@ -65,16 +82,20 @@ class Tags implements Routable {
                     if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_REQUEST["id"])) $return = $tag->migrate((integer) $_REQUEST['target']);
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
+
+                /**
+                * TAGS OF RESSOURCES
+                */
                 case "getTagsAShip":
                     $ship = new Ships\models\Ship($_REQUEST['ship']);
                     if(Rights\Main::user_can("USER_CAN_SEE_JULIET")) $return = Tag::get_tags_from_ship($ship);
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
-                case "getTagsAShipModel":
+                case "getTagsShipModel":
                     if(Rights\Main::user_can("USER_CAN_SEE_JULIET")) $return = Tag::get_tags_from_ship_model(new Ships\models\ShipType($_REQUEST['shipModel']));
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
-                case "getTagsAShipVariant":
+                case "getTagsShipVariant":
                     if(Rights\Main::user_can("USER_CAN_SEE_JULIET")) $return = Tag::get_tags_from_ship_variant(new Ships\models\ShipVariant($_REQUEST['shipTemplate']));
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
@@ -98,6 +119,10 @@ class Tags implements Routable {
                     if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_REQUEST["id"])) $return = $tag->unaffect_ship_model(new Ships\models\ShipType($_REQUEST['shipModel']));
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
+
+                /**
+                * MISC FUNCTIONS
+                */
                 case "getNameById":
                     $return = Tag::get_name_by_id($_REQUEST['id']);
                 break;

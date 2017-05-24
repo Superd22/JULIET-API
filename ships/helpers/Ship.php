@@ -22,7 +22,7 @@ class Ship {
         $return = [];
 
         // We're a a ship so we get our type.
-        $sql = "SELECT type_id FROM star_ships WHERE id='{$this->id}' LIMIT 1";
+        $sql = "SELECT type_id FROM star_ships WHERE id='{$this->_ship_id}' LIMIT 1";
         $query = $mysqli->query($sql);
 
         $parent = $query->fetch_assoc();
@@ -37,11 +37,13 @@ class Ship {
         // We want to get all the tags from our model
         $return[] = [];
         foreach($this->get_parents_for_heritage() as $herit) {
-            $type = new JULIET\api\Ships\models\ShipType($herit);
-            $tags = JULIET\api\Tags\helper\Tags::get_tags_from_ship_model( $type );
+            $type = new \JULIET\api\Ships\models\ShipType($herit);
+            $tags = \JULIET\api\Tags\helper\Tag::get_tags_from_ship_model( $type );
 
             foreach($tags as $tag) {
-                $tag->set_heritage($tag->id, "shipModel");
+                if(!$tag->has_heritage())
+                $tag->set_heritage($herit, "shipModel");
+                
                 // Prevent doubles
                 $return[$tag->id] = $tag;
             }
@@ -84,6 +86,15 @@ class Ship {
 
         if($mysqli->error) throw new \Exception($mysqli->error);
         else return $ship;
+    }
+
+    public function get_info() {
+        $mysqli = db::get_mysqli();
+        $sql = "SELECT * FROM star_ships WHERE id={$this->_ship_id} LIMIT 1";
+        $query = $mysqli->query($sql);
+        $ship = $query->fetch_assoc();
+
+        return new \JULIET\api\Ships\models\Ship($ship);
     }
 }
 ?>

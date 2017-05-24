@@ -27,8 +27,7 @@ class Main {
       return $q->fetch_all(MYSQLI_ASSOC);
   }
 
-    public static function getUsersById($ids) {
-        function fetchUserById($id) {
+    private static function fetchUserById($id) {
             $myqsli = db::get_mysqli();
             $id = (integer) $id;
 
@@ -39,13 +38,18 @@ class Main {
             $user['avatar'] = Main::get_user_avatar($user['id']);
             if($user["username"]) return $user;
             else return false;
+    }
+
+    public static function getUsersById($ids) {
+        if(is_array($ids)) {
+            $r = [];
+            foreach($ids as $id)
+                $r[] = self::fetchUserById($id);
+
+            return $r;   
         }
-
-        $r = [];
-        foreach($ids as $id)
-            $r[] = fetchUserById($id);
-
-        return $r;   
+        return self::fetchUserById($ids);
+        
     }
 
     public static function get_user_avatar($user_id) {

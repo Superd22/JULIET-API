@@ -62,10 +62,20 @@ class ShipVariant {
 
         $return = [];
         foreach($tags as $tag) {
-            $tag->set_heritage($tag->id, $variant_of_model ? "shipModel" : "ship");
+            if(!$tag->has_heritage())
+            $tag->set_heritage($herit, $variant_of_model ? "shipModel" : "ship");
             $return[] = $tag;
         }
 
         return $return;
+    }
+
+    public function get_info() {
+        $mysqli = db::get_mysqli();
+        $sql = "SELECT * FROM star_ships_variant WHERE id={$this->id} LIMIT 1";
+        $query = $mysqli->query($sql);
+        $ship = $query->fetch_assoc();
+
+        return new \JULIET\api\Ships\models\ShipVariant($ship);
     }
 }

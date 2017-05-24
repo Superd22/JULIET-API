@@ -6,16 +6,23 @@ use JULIET\api\Response;
 use JULIET\api\Rights\Main as Rights;
 
 class Tag {
+    /** id of this tag */
     public $id;
+    /** name of this tag */
     public $name;
+    /** img of this tag */
     public $img;
     public $type;
+    /** @deprecated */
     public $INFO;
     public $count;
     public $parent;
     public $rights_from;
     public $cat = "tag";
     public $herited_from;
+    public $restricted;
+    /** Array of targets (thing having this tag) */
+    public $targets = [];
     
     protected $tag_id;
     protected $tag_category;
@@ -29,12 +36,18 @@ class Tag {
         elseif(isset($tag_id)) {
             foreach($tag_id as $pp => $val)
             if(isset($pp) && isset($val)) $this->{$pp} = $val;
+            $this->enforce_types();
         }
         else throw new \Exception("NO_TAG_ID");
             
         $this->db = db::get_mysqli();
     }
     
+    private function enforce_types() {
+        $this->id = (integer) $this->id;
+        $this->restricted = (integer) $this->restricted;
+    }
+
     public function get_count() {
         $mysqli = db::get_mysqli();
         $ct = $mysqli->query('SELECT COUNT(*) FROM star_tags_af WHERE tag_id = "'.$this->id.'" ');
@@ -43,6 +56,10 @@ class Tag {
         $this->count = $ct["COUNT(*)"];
         
         return $this->count;
+    }
+
+    public function has_heritage() {
+        return $this->herited_from != null;
     }
 
     public function set_heritage($id, $type) {
@@ -54,7 +71,7 @@ class Tag {
         global $user;
         if($userid == 1) $userid = $user->data['user_id'];
         $where = "";
-        
+        $herit = null;
         $mysqli = db::get_mysqli();
         if ($user_id > 0) {
             $where = "HAVING id in (SELECT tag_id FROM star_tags_af WHERE user_id='".(integer) $userid."')";
@@ -65,11 +82,11 @@ class Tag {
         }
         elseif($ship_type_id > 0) {
             $where = "HAVING id in (SELECT tag_id FROM star_tags_af WHERE shipType_id='".(integer) $ship_type_id."')";
-            $herit = new \JULIET\api\Ships\helpers\ShipType($ship_id);
+            $herit = new \JULIET\api\Ships\helpers\ShipType($ship_type_id);
         }
         elseif($ship_template_id > 0) {
             $where = "HAVING id in (SELECT tag_id FROM star_tags_af WHERE ship_variant_id='".(integer) $ship_type_id."')";
-            $herit = new \JULIET\api\Ships\helpers\ShipVariant($ship_id);
+            $herit = new \JULIET\api\Ships\helpers\ShipVariant($ship_template_id);
         }
         elseif($ressource_id > 0) {
             $where = "HAVING id in (SELECT tag_id FROM star_tags_af WHERE ressource_id='".(integer) $ressource_id."')";
@@ -78,19 +95,22 @@ class Tag {
         $return = [];
         
         $tags = $mysqli->query('SELECT * FROM star_tags '.$where.' ORDER BY id DESC');
+
+        // [HERITAGE] LAND
+        if($herit) {
+            $herited_tags = $herit->get_herited_tags();
+            foreach($herited_tags as $tag) {
+                if($tag && $tag->id)
+                $return[$tag->id] = $tag;
+            }
+        }
+        
         while($list = $tags->fetch_assoc()) {
             $tag = new Tag($list);
             // if($tag->get_count() > 0) $return[] = $tag;
             // Prevent doubles
             $return[$tag->id] = $tag;
         }
-
-        // [HERITAGE] LAND
-        $herited_tags = $herit->get_herited_tags();
-        foreach($herited_tags as $tag) {
-            $return[$tag->id] = $tag;
-        }
-        
         
         return array_values($return);
     }
@@ -109,7 +129,7 @@ class Tag {
     
     public static function get_tags_from_ship_model(\JULIET\api\Ships\models\ShipType $ship) {
         $shiptypeid = (integer) $ship->id;
-        return self::get_all_tags(null,null,$shipid);
+        return self::get_all_tags(null,null,$shiptypeid);
     }
     
     public static function get_name_by_id($id) {
@@ -182,7 +202,7 @@ class Tag {
         elseif(is_string($tag)) $where = "WHERE name='{$mysql->real_escape_string($tag)}'";
         else {throw new \Exception("WRONG_TAG_ARG"); return false;}
         
-        $sql = "SELECT * FROM star_tags ".$where;
+        $sql = "SELECT * FROM star_tags ".$where." LIMIT 1";
         $q = $mysql->query($sql);
         
         return new Tag($q->fetch_assoc());
@@ -339,6 +359,83 @@ class Tag {
         return ($this->cat == "tag");
     }
     
+
+    /**
+    * Get all the info about this tag + who has it
+    * @param $tag_name the name of the tag to fetch
+    * @param $all get all type of ressources (only user if false)
+    * @return a Tag with ressources info, or null.
+    */
+    public static function get_tag_info($tag_name, $all = false) {
+        if(!is_string($tag_name) || empty($tag_name)) throw new \Exception("NO VALID TAG NAME");
+
+        $mysqli =  db::get_mysqli();
+        $tags = $mysqli->query('SELECT * FROM star_tags WHERE name="'.$mysqli->real_escape_string($tag_name).'" LIMIT 1');
+        $tag = $tags->fetch_assoc();
+
+        // Holds our basics information.
+        $rTag = new Tag($tag);
+        // Get our ressources
+        $rTag->fetch_owner_of_this($all);
+
+        return $rTag;
+    }
+
+    /**
+    * Get all the ressources who posses this tag
+    * @param $all get all type of ressources (only users if false)
+    */
+    public function fetch_owner_of_this($all = false) {
+        $mysqli =  db::get_mysqli();
+
+        // Get everything that is *directly* tied to us
+        $sql = "SELECT * FROM star_tags_af WHERE tag_id={$this->id}";
+        $query = $mysqli->query($sql);
+
+        while($child = $query->fetch_assoc()) {
+            $id = $type = $img = $name = null;
+            if($this->should_add_child($child, $all)) {
+                $type = $this->type_of_child($child);
+                switch($type) {
+                    case "user":
+                        $id = $child['user_id'];
+                        $info = \JULIET\API\Common\Main::getUsersById($id);
+                        $img = $info['avatar'];
+                        $name = $info['username'];
+                    break;
+                    case "ship":
+                        $id = $child['ship_id'];
+                        $ship = new \JULIET\api\Ships\helpers\Ship($id);
+                        $info = $ship->get_info();
+                        $img = $info->ico;
+                        $name = $info->name;
+                    break;
+                    case "ship_type":
+                        $id = $child['shipType_id'];
+                        $ship = new \JULIET\api\Ships\helpers\ShipType($id);
+                        $info = $ship->get_info();
+                        $img = $info->ico;
+                        $name = $info->name;
+                    break;
+                }
+
+                if($id != null)
+                $this->targets[] = new \JULIET\api\Tags\model\TagTarget($id, $type, $img, $name);
+            }
+        }
+
+    }
+
+    private function should_add_child($child, $all) {
+        return $all || !empty($child['user_id']);
+    }
     
+    private function type_of_child($child) {
+        if(!empty($child['user_id'])) return "user";
+        if(!empty($child['ship_id'])) return "ship";
+        if(!empty($child['shipType_id'])) return "ship_type";
+        if(!empty($child['ship_variant_id'])) return "ship_variant";
+        if(!empty($child['ressource_id'])) return "ressource";
+    }
     
 }

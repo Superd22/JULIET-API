@@ -199,7 +199,7 @@ if($_REQUEST['name'] && $_REQUEST['category']) {
     
     $name = $_GET['name'];
     $cat = $_GET['category'];
-    
+
     print_r(Response::json_response(tags_get_single($name,$cat)));
     $mysqli->close();
 }

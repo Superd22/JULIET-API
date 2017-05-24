@@ -10,14 +10,13 @@ class ShipType {
     
     private $id;
 
-    public function __constructor($shipTypeId) {
+    public function __construct($shipTypeId) {
         if( !($shipTypeId > 0) ) throw new \Exception("SHIPTYPE_ID_TARGET_ERROR");
         $this->id = (integer) $shipTypeId;
     }
 
     public function get_parents_for_heritage() {
         $mysqli = db::get_mysqli();
-
         $return = [];
 
         // We're a ship type, so we need to check if we have to get something from parents
@@ -28,18 +27,17 @@ class ShipType {
 
         if((integer) $parent['parent'] > 0)
         $return[] = (integer) $parent['parent'];
-
         return $return;
     }
 
     public function get_herited_tags() {
-        $herit = $this->get_parents_for_heritage()[0];
+        $herit = (integer) $this->get_parents_for_heritage()[0];
         if(!$herit) return null;
 
-        $tags = JULIET\api\Tags\helper\Tags::get_tags_from_ship_model( new JULIET\api\Ships\models\ShipType($herit) );
+        $tags = \JULIET\api\Tags\helper\Tag::get_tags_from_ship_model( new \JULIET\api\Ships\models\ShipType($herit) );
         $return = [];
         foreach($tags as $tag) {
-            $tag->set_heritage($tag->id, "shipModel");
+            if(!$tag->has_heritage()) $tag->set_heritage((integer) $herit, "shipModel");
             $return[] = $tag;
         }
 
@@ -93,5 +91,14 @@ class ShipType {
         
         if($mysqli->error) throw new \Exception($mysqli->error);
         else return $ship;
+    }
+
+    public function get_info() {
+        $mysqli = db::get_mysqli();
+        $sql = "SELECT * FROM star_ship WHERE id={$this->id} LIMIT 1";
+        $query = $mysqli->query($sql);
+        $ship = $query->fetch_assoc();
+
+        return new \JULIET\api\Ships\models\ShipType($ship);
     }
 }
