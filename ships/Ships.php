@@ -77,15 +77,14 @@ class Ships implements Routable {
                 case "adminShipType":
                     if(!isset($_REQUEST['shipType'])) throw new \Exception("NO_SHIP_TARGET");
                     $shipType = new Ships\models\ShipType($_REQUEST['shipType']);
-
-                    if(Rights\Main::user_can("USER_IS_ADMIN")) $return = Ships\helpers\Ship::update_ship_type($shipType);
+                    if(Rights\Main::user_can("USER_IS_ADMIN")) $return = Ships\helpers\ShipType::update_ship_type($shipType);
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
 
                 case "adminDeleteShipType": 
                     if(!isset($_REQUEST['shipTypeId'])) throw new \Exception("NO_SHIP_TARGET");
                     $id = $_REQUEST['shipTypeId'];
-                    if(Rights\Main::user_can("USER_IS_ADMIN")) $return = Ships\helpers\Ship::delete_ship_type((integer) $id);
+                    if(Rights\Main::user_can("USER_IS_ADMIN")) $return = Ships\helpers\ShipType::delete_ship_type((integer) $id);
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
             }
