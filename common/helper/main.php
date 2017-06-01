@@ -19,7 +19,7 @@ class Main {
       $db = self::mysqli();
 
       $user = $db->real_escape_string($user);
-      $sql = "SELECT username, user_id FROM testfo_users, star_fleet  WHERE username LIKE '%".$user."%' 
+      $sql = "SELECT username, user_id FROM testfo_users, star_fleet  WHERE username COLLATE UTF8_GENERAL_CI LIKE '%".$user."%' 
       AND user_id = id_forum";
 
       $q = $db->query($sql);

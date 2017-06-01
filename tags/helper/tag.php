@@ -270,10 +270,10 @@ class Tag {
         $insert = $mysql->query("INSERT INTO star_tags (name, img)
         VALUES('".$title."','')");
         
-        $select = $mysql->query("SELECT id FROM star_tags WHERE name='".$title."'");
-        $id = $select->fetch_assoc();
+        $select = $mysql->query("SELECT * FROM star_tags WHERE name='".$title."'");
+        $tg = $select->fetch_assoc();
         
-        return new Tag($id['id']);
+        return new Tag($tg);
     }
     
     
@@ -420,7 +420,7 @@ class Tag {
                 }
 
                 if($id != null)
-                $this->targets[] = new \JULIET\api\Tags\model\TagTarget($id, $type, $img, $name);
+                $this->targets[] = new \JULIET\api\Tags\model\TagTarget($id, $info, $type, $img, $name);
             }
         }
 

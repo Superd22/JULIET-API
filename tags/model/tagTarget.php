@@ -10,11 +10,13 @@ class TagTarget {
     public $type;
     public $img;
     public $name;
-
-    public function __construct($id, $type="user", $img="", $name="") {
-        $this->id = (integer) $id;
-        $this->type = $type;
-        $this->img  = $img;
-        $this->name = $name;
+    public $target;
+    
+    public function __construct($id, $target, $type="user", $img="", $name="") {
+        $this->id     = (integer) $id;
+        $this->type   = $type;
+        $this->img    = $img;
+        $this->name   = $name;
+        $this->target = $target;
     }
 }

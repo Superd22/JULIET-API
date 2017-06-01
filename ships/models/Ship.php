@@ -10,6 +10,7 @@ class Ship {
     public $type_id;
     public $name;
     public $owner;
+    public $type;
     
     public function __construct($ship) {
         if($ship !== null && $ship['id'] !== null) {
@@ -21,5 +22,9 @@ class Ship {
         elseif($ship !== null && is_numeric($ship) && (integer) $ship > 0) {
             $this->id      = (integer) $ship;
         }
+    }
+
+    public function set_type(ShipType $type) {
+        $this->type = $type;
     }
 }
