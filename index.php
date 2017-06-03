@@ -23,6 +23,7 @@ $r3->any("/", function() {
 });
 
 
+require_once("common/CommonRoutable.php");
 require_once("rights/routes.php");
 require_once("tags/routes.php");
 require_once("ts3/routes.php");

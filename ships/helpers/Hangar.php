@@ -37,7 +37,12 @@ class Hangar {
         $ships = [];
         $db = $mysqli->query("SELECT * FROM star_ships WHERE owner = '{$player_id}'");
         while($list = $db->fetch_assoc()) {
-            $ships[] = new ShipModel($list);
+            $ship = new ShipModel($list);
+            $ship->fetch_type();
+            $ship->fetch_variants();
+
+            $ships[] = $ship;
+
         }
         
         $hangar->setShips($ships);

@@ -55,6 +55,9 @@ class Ships implements Routable {
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
 
+                /**
+                 * SINGLE SHIP 
+                 */
                 case "deleteShip":
                     $ship = new Ships\helpers\Ship((integer) $_GET['ship_id']);
                     $owner = $ship->get_owner();
@@ -73,7 +76,11 @@ class Ships implements Routable {
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
 
+               
 
+                /**
+                 * @todo REMOVE
+                 */
                 case "adminShipType":
                     if(!isset($_REQUEST['shipType'])) throw new \Exception("NO_SHIP_TARGET");
                     $shipType = new Ships\models\ShipType($_REQUEST['shipType']);

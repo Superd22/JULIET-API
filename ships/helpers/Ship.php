@@ -97,8 +97,13 @@ class Ship {
         $rShip = new \JULIET\api\Ships\models\Ship($ship);
         $st = new ShipType($ship['type_id']);
         $rShip->set_type($st->get_info());
+        $rShip->set_variants($this->get_variants());
         
         return $rShip;
+    }
+
+    public function get_variants() {
+        return ShipVariant::get_variants_of_ship($this->_ship_id);        
     }
 }
 ?>
