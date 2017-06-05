@@ -9,22 +9,31 @@ class ShipTemplates extends CommonRoutable {
     
     protected function switch_get($path) {
         switch($path) {
-            case "update":
-                    if(!isset($_REQUEST['shipType'])) throw new \Exception("NO_SHIP_TARGET");
-                    $shipType = new Ships\models\ShipType($_REQUEST['shipType']);
-                    if(Rights\Main::user_can("USER_IS_ADMIN")) return Ships\helpers\ShipType::update_ship_type($shipType);
-                    else throw new \Exception("USER_NO_RIGHTS");
-                break;
+            case "add":
+                $shipT = new Ships\models\ShipVariant($_REQUEST['shipTemplate']);
+                if(
+                    $shipT->ship_id > 0 && Rights\Main::user_can("USER_CAN_EDIT_SHIP", 0, $shipT->ship_id)
+                 || $shipT->ship_type_id > 0 && Rights\Main::user_can("USER_IS_ADMIN")
+                ) $return = Ships\helpers\ShipVariant::add($shipT);
+                else throw new \Exception("USER_NO_RIGHTS");
 
-            case "delete": 
-                    if(!isset($_REQUEST['shipTypeId'])) throw new \Exception("NO_SHIP_TARGET");
-                    $id = $_REQUEST['shipTypeId'];
-                    if(Rights\Main::user_can("USER_IS_ADMIN")) return Ships\helpers\ShipType::delete_ship_type((integer) $id);
-                    else throw new \Exception("USER_NO_RIGHTS");
             break;
 
-            case "getAll":
-                if(Rights\Main::user_can("USER_CAN_SEE_JULIET")) return Ships\helpers\Hangar::getAllShipsType();
+            case "delete":
+                $shipT = new Ships\models\ShipVariant($_REQUEST['shipTemplate']);
+                if(
+                    $shipT->ship_id > 0 && Rights\Main::user_can("USER_CAN_EDIT_SHIP", 0, $shipT->ship_id)
+                 || $shipT->ship_type_id > 0 && Rights\Main::user_can("USER_IS_ADMIN")
+                ) return Ships\helpers\ShipVariant::remove($shipT);
+                else throw new \Exception("USER_NO_RIGHTS");
+            break;
+
+            case "update":
+                $shipT = new Ships\models\ShipVariant($_REQUEST['shipTemplate']);
+                if(
+                    $shipT->ship_id > 0 && Rights\Main::user_can("USER_CAN_EDIT_SHIP", 0, $shipT->ship_id)
+                 || $shipT->ship_type_id > 0 && Rights\Main::user_can("USER_IS_ADMIN")
+                ) return Ships\helpers\ShipVariant::update($shipT);
                 else throw new \Exception("USER_NO_RIGHTS");
             break;
         }

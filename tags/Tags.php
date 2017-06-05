@@ -5,6 +5,7 @@ require_once(__DIR__."/helper/tag.php");
 require_once(__DIR__."/helper/rank.php");
 require_once(__DIR__."/helper/ship.php");
 require_once(__DIR__."/helper/tags.php");
+require_once(__DIR__."/rights/Tag.rights.php");
 
 use Respect\Rest\Routable;
 use JULIET\api\Tags\helper\tag;
@@ -64,12 +65,12 @@ class Tags implements Routable {
                 break;
                 case "affect":
                     $tag = new Tag($_REQUEST['id']);
-                    if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_REQUEST["id"])) $return = $tag->affect($_REQUEST['user_id']);
+                    if(Rights\Main::user_can("USER_CAN_GIVE_TAG_TO_USER", 0, ["tag"=>$_REQUEST["id"], "target_user"=>$_REQUEST['user_id']])) $return = $tag->affect($_REQUEST['user_id']);
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
                 case "unaffect":
                     $tag = new Tag($_REQUEST['id']);
-                    if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_REQUEST["id"])) $return = $tag->unaffect($_REQUEST['user_id']);
+                    if(Rights\Main::user_can("USER_CAN_GIVE_TAG_TO_USER", 0, ["tag"=>$_REQUEST["id"], "target_user"=>$_REQUEST['user_id']])) $return = $tag->unaffect($_REQUEST['user_id']);
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
                 case "delete":
@@ -107,6 +108,16 @@ class Tags implements Routable {
                 case "unaffectShip":
                     $tag = new Tag($_REQUEST['id']);
                     if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_REQUEST["id"])) $return = $tag->unaffect_ship(new Ships\models\Ship($_REQUEST['ship']));
+                    else throw new \Exception("USER_NO_RIGHTS");
+                break;
+                case "affectShipTemplate":
+                    $tag = new Tag($_REQUEST['id']);
+                    if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_REQUEST["id"])) $return = $tag->affect_ship_template(new Ships\models\ShipVariant($_REQUEST['shipTemplate']));
+                    else throw new \Exception("USER_NO_RIGHTS");
+                break;
+                case "unaffectShipTemplate":
+                    $tag = new Tag($_REQUEST['id']);
+                    if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_REQUEST["id"])) $return = $tag->unaffect_ship_template(new Ships\models\ShipVariant($_REQUEST['shipTemplate']));
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
                 case "affectShipModel":

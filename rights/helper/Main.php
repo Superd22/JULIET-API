@@ -47,16 +47,12 @@ class Main {
       case "USER_CAN_SEE_ADMIN_LOGS":
         // lEGACY : user_id is target here.
         return SELF::has_admin_on_player(0, $user_id);
-      break;
       case "USER_CAN_ADMIN_EVENT":
         return SELF::can_admin_event($user_id, $target);
-      break;
       case "USER_IS_SIBYLLA":
         return SELF::is_sibylla($user_id);
       case "USER_IS_LOGGED_IN":
         return SELF::is_logged_in();
-      case "USER_CAN_ADMIN_TAG":
-        return SELF::can_admin_tag($user_id, $target);
       case "USER_CAN_SEE_JULIET":
         return SELF::user_can_see_juliet($user_id);
       case "USER_IS_ADMIN": 
@@ -67,6 +63,19 @@ class Main {
         return SELF::user_can_edit_ship($user_id, $target);
       case "USER_CAN_EDIT_SHIP_TAGS":
         return SELF::user_can_edit_ship_tags($user_id, $target);
+
+      /** TAGS */
+      case "USER_CAN_ADMIN_TAG":
+        return \JULIET\api\Tags\Rights\Tag::user_can_admin_tag($user_id, $target);
+      case "USER_CAN_GIVE_TAG_TO_USER":
+        return \JULIET\api\Tags\Rights\Tag::user_can_admin_tag($user_id, $target['tag'], $target['target_user']);
+
+
+      /** SHIPS */
+      case "USER_CAN_EDIT_SHIP":
+        return \JULIET\api\Ships\Rights\Ship::user_can_edit_ship($user_id, $target);
+      case "USER_CAN_ADMIN_VARIANTS_OF_SHIP":
+        return \JULIET\api\Ships\Rights\Ship::user_can_admin_variants_of_ship($user_id, $target);
     }
   }
 
@@ -128,7 +137,15 @@ class Main {
     if(SELF::is_admin($user_id)) return true;
     if($deep && \JULIET\api\Tags\helper\Tag::user_has_tag($user_id, $target)) return true;
 
-    return can_admin_tag($user_id, \JULIET\api\Tags\helper\Tag::get_rights_from($target), true);
+    return self::can_admin_tag($user_id, \JULIET\api\Tags\helper\Tag::get_rights_from($target), true);
+  }
+
+  /**
+   * Check if the user can affect/unaffect the given tag to the given user 
+   */
+  public static function can_affect_tag_to_user($user_id, $tag_id, $target_user_id) {
+    if( !($tag_id > 0) ) throw new \Exception("[RIGHTS] WRONG TARGET FOR (un)AFFECTATION");
+    $user_id = SELF::handle_user_id($user_id);
   }
 
   private static function has_admin_on_player($user_id = 0, $target = 0) {
@@ -139,7 +156,7 @@ class Main {
     return ($user_id == $target);
   }
 
-  private static function is_admin($user_id = 0) {
+  public static function is_admin($user_id = 0) {
     $user_id = SELF::handle_user_id($user_id);
     $sql = "SELECT * FROM testfo_user_group WHERE user_id='{$user_id}'";
 

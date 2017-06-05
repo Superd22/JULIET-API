@@ -10,7 +10,7 @@ class ShipVariant {
     
     private $id;
     
-    public function __constructor($shipTypeId) {
+    public function __construct($shipTypeId) {
         if( !($shipTypeId > 0) ) throw new \Exception("SHIPVARIANT_ID_TARGET_ERROR");
         $this->id = (integer) $shipTypeId;
     }
@@ -53,8 +53,24 @@ class ShipVariant {
     */
     public static function add(\JULIET\api\Ships\models\ShipVariant $variant) {
         $mysqli = db::get_mysqli();
-        $sql = "INSERT INTO star_ships_variant (name) VALUES
-        ('{$mysqli->real_escape_string($variant->name)}')";
+
+        if($variant->ship_id > 0) {
+            $sql_target = "ship_id";
+            $target_id = $variant->ship_id;
+        }
+        elseif($variant->ship_type_id > 0) {
+            $sql_target = "ship_type_id";
+            $target_id = $variant->ship_type_id;
+        }
+        else throw new \Exception("CAN'T ADD VARIANT : NO PARENT ID");
+
+
+        $ship_id = $variant->ship_id == 0 ? null : $variant->ship_id;
+        $ship_type_id = $variant->ship_type_id == 0 ? null : $variant->ship_type_id;
+
+        $sql = "INSERT INTO star_ships_variant (name, {$sql_target}) VALUES
+        ('{$mysqli->real_escape_string($variant->name)}',
+        '{$target_id}')";
         
         $add_query = $mysqli->query($sql);
         if($mysqli->error) throw new \Exception("[DBERROR] CAN'T ADD VARIANT : ".$mysqli->error);
@@ -81,6 +97,9 @@ class ShipVariant {
     
     public static function update(\JULIET\api\Ships\models\ShipVariant $variant) {
         $mysqli = db::get_mysqli();
+
+        if($variant->id == 0) return self::add($variant);
+
         $sql = "UPDATE FROM star_ships_variant SET
         name = '{$mysqli->real_escape_string($variant->name)}'
         WHERE id='{$variant->id}'";
@@ -120,8 +139,8 @@ class ShipVariant {
         $herit = $this->get_parents_for_heritage($variant_of_model)[0];
         if(!$herit) return null;
         
-        if($variant_of_model) $tags = JULIET\api\Tags\helper\Tags::get_tags_from_ship_model( new JULIET\api\Ships\models\ShipType($herit) );
-        else $tags = JULIET\api\Tags\helper\Tags::get_tags_from_ship( new JULIET\api\Ships\models\Ship($herit) );
+        if($variant_of_model) $tags = \JULIET\api\Tags\helper\Tag::get_tags_from_ship_model( new \JULIET\api\Ships\models\ShipType($herit) );
+        else $tags = \JULIET\api\Tags\helper\Tag::get_tags_from_ship( new \JULIET\api\Ships\models\Ship($herit) );
             
         $return = [];
         foreach($tags as $tag) {
@@ -151,10 +170,10 @@ class ShipVariant {
     public static function get_variants_of_ship($ship_id) {
         $mysqli = db::get_mysqli();
         $ship_id = (integer) $ship_id;
-        
+
         $sql = "SELECT * FROM star_ships_variant WHERE ship_id={$ship_id}";
         $query = $mysqli->query($sql);
-        
+    
         $variants = [];
         while($variant = $query->fetch_assoc()) {
             $variants[] = new \JULIET\api\Ships\models\ShipVariant($variant);

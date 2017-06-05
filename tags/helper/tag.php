@@ -85,13 +85,12 @@ class Tag {
             $herit = new \JULIET\api\Ships\helpers\ShipType($ship_type_id);
         }
         elseif($ship_template_id > 0) {
-            $where = "HAVING id in (SELECT tag_id FROM star_tags_af WHERE ship_variant_id='".(integer) $ship_type_id."')";
-            $herit = new \JULIET\api\Ships\helpers\ShipVariant($ship_template_id);
+            $where = "HAVING id in (SELECT tag_id FROM star_tags_af WHERE ship_variant_id='".(integer) $ship_template_id."')";
+            $herit = new \JULIET\api\Ships\helpers\ShipVariant((integer) $ship_template_id);
         }
         elseif($ressource_id > 0) {
             $where = "HAVING id in (SELECT tag_id FROM star_tags_af WHERE ressource_id='".(integer) $ressource_id."')";
         }
-        
         $return = [];
         
         $tags = $mysqli->query('SELECT * FROM star_tags '.$where.' ORDER BY id DESC');
@@ -111,7 +110,7 @@ class Tag {
             // Prevent doubles
             $return[$tag->id] = $tag;
         }
-        
+
         return array_values($return);
     }
 
@@ -235,15 +234,14 @@ class Tag {
         }
     
     public static function get_rights_from($tag_id)  {
-        $mysql =  db::get_mysqli();
+        $mysqli =  db::get_mysqli();
         
-        if($this->is_normal_tag()) {
-            $sql = "SELECT rights_from FROM star_tags WHERE id = '{$tag_id}' LIMIT 1";
-            $ct = $mysqli->query($sql);
-            $ct = $ct->fetch_assoc();
+        $sql = "SELECT rights_from FROM star_tags WHERE id = '{$tag_id}' LIMIT 1";
+        $ct = $mysqli->query($sql);
+        $ct = $ct->fetch_assoc();
             
-            if($ct["rights_from"] > 0) return $ct["rights_from"];
-        }
+        if($ct["rights_from"] > 0) return $ct["rights_from"];
+
         return false;
     }
     
@@ -326,8 +324,29 @@ class Tag {
             return $this->db->query($sql);
         }
     }
+
+    public function affect_ship_template(JULIET\api\Ships\models\ShipVariant $ship) {
+        $ship_id = (integer) $ship->id;
+ 
+        if($this->is_normal_tag() && $ship_id > 0) {
+            $sql = "INSERT INTO star_tags_af
+            (tag_id, ship_variant_id)
+            VALUES ('{$this->id}', '{$ship_id}')";
+            return $this->db->query($sql);
+        }
+        
+        return false;
+    }
     
     
+    public function unaffect_ship_template(JULIET\api\Ships\models\ShipVariant $ship) {
+        $ship_id = (integer) $ship->id;
+        if($this->is_normal_tag()) {
+            $sql = "DELETE FROM star_tags_af WHERE ship_variant_id='{$ship_id}' AND tag_id='{$this->id}'";
+            return $this->db->query($sql);
+        }
+    }
+
     /**
     * Affect to ship
     */

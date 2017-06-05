@@ -13,6 +13,9 @@ class ShipVariant {
     
     public function __construct($ship) {
         if($ship !== null && $ship['id'] !== null) {
+
+            if( !((integer) $ship['ship_id'] > 0) && !((integer) $ship['ship_type_id'] > 0) )
+            throw new \Exception("ShipVariant *MUST* HAVE A PARENT");
             $this->id      = (integer) $ship['id'];
             $this->ship_id = (integer) $ship['ship_id'];
             $this->ship_type_id = (integer) $ship['ship_type_id'];
@@ -21,5 +24,6 @@ class ShipVariant {
         elseif($ship !== null && is_numeric($ship) && (integer) $ship > 0) {
             $this->id      = (integer) $ship;
         }
+        else throw new \Exception("ShipVariant INVALID TARGET");
     }
 }
