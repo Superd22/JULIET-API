@@ -249,13 +249,12 @@ class Tag {
         $user_id = (integer) $user_id;
         $tag_id = (integer) $tag_id;
         
-        if($this->is_normal_tag()) {
-            $mysql =  db::get_mysqli();
-            $sql = "SELECT COUNT(*) FROM star_tags_af WHERE user_id='{$user_id}' AND tag_id='{$tag_id}' LIMIT 1";
-            $ct = $mysqli->query($sql);
-            $ct = $ct->fetch_assoc();
-            if($ct["COUNT(*)"] > 0) return true;
-        }
+        $mysql =  db::get_mysqli();
+        $sql = "SELECT COUNT(*) FROM star_tags_af WHERE user_id='{$user_id}' AND tag_id='{$tag_id}' LIMIT 1";
+        $ct = $mysql->query($sql);
+        $ct = $ct->fetch_assoc();
+        if($ct["COUNT(*)"] > 0) return true;
+
         return false;
     }
     
@@ -280,7 +279,6 @@ class Tag {
     */
     public function affect($user_id) {
         $user_id = (integer) $user_id;
-        
         if($this->is_normal_tag() && $user_id > 0) {
             $sql = "INSERT INTO star_tags_af
             (tag_id, user_id)

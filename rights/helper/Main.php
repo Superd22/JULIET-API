@@ -68,7 +68,7 @@ class Main {
       case "USER_CAN_ADMIN_TAG":
         return \JULIET\api\Tags\Rights\Tag::user_can_admin_tag($user_id, $target);
       case "USER_CAN_GIVE_TAG_TO_USER":
-        return \JULIET\api\Tags\Rights\Tag::user_can_admin_tag($user_id, $target['tag'], $target['target_user']);
+        return \JULIET\api\Tags\Rights\Tag::user_can_give_tag_to_user($user_id, $target['tag'], $target['target_user']);
 
 
       /** SHIPS */

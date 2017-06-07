@@ -28,6 +28,14 @@ class Tag {
         return deep_check($user_id, $tag->id);
     }
     
+    /**
+     * Will check if the given user has sufficient right to affect/unaffect supplied tag to target user
+     *
+     * @param [integer] $user_id the user we're checking against
+     * @param [integer] $tag the tag id to check for
+     * @param [integer] $target_user the user we want to affect the tag to
+     * @return [boolean]
+     */
     public static function user_can_give_tag_to_user($user_id, $tag, $target_user) {
         $user_id = Rights::handle_user_id($user_id);
         $target_user = Rights::handle_user_id($target_user);
@@ -42,6 +50,7 @@ class Tag {
             return self::user_can_admin_tag($user_id,$tag);
         }
     }
+
     public static function user_can_give_tag_to_ship($user_id, $tag, $target_ship) {
         $user = Rights::handle_user_id($user);
         $tag = self::fetch_tag_object($tag);
