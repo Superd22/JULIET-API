@@ -62,13 +62,15 @@ class Ship {
      * @return \models\Ship ship
      */
     private static function fetch_ship_if_needed(&$ship) {
-        if($ship instanceof \JULIET\api\Ships\models\Ship)
-        return $ship;
+        if($ship instanceof \JULIET\api\Ships\models\Ship) return;
         if(is_numeric($ship) && $ship > 0) {
-            $rShip = \JULIET\api\Ships\helpers\Ship($ship);
-            $rShip->get_info();
-            
-            return $rShip;
+            $rShip = new \JULIET\api\Ships\helpers\Ship($ship);
+            $ship = $rShip->get_info();
+            return;
+        }
+        else {
+            $ship = new \JULIET\api\Ships\models\Ship($ship);
+            return;
         }
         
         throw new \Exception("[RIGHTS-Ship] Wrong target supplied");

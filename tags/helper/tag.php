@@ -299,7 +299,7 @@ class Tag {
     /**
     * Affect to ship
     */
-    public function affect_ship(JULIET\api\Ships\models\ShipType $ship) {
+    public function affect_ship(\JULIET\api\Ships\models\Ship $ship) {
         $ship_id = (integer) $ship->id;
         
         if($this->is_normal_tag() && $ship_id > 0) {
@@ -315,7 +315,7 @@ class Tag {
     /**
     * Un affects current tag to the ship
     */
-    public function unaffect_ship(JULIET\api\Ships\models\ShipType $ship) {
+    public function unaffect_ship(\JULIET\api\Ships\models\Ship $ship) {
         $ship_id = (integer) $ship->id;
         if($this->is_normal_tag()) {
             $sql = "DELETE FROM star_tags_af WHERE ship_id='{$ship_id}' AND tag_id='{$this->id}'";
@@ -323,7 +323,7 @@ class Tag {
         }
     }
 
-    public function affect_ship_template(JULIET\api\Ships\models\ShipVariant $ship) {
+    public function affect_ship_template(\JULIET\api\Ships\models\ShipVariant $ship) {
         $ship_id = (integer) $ship->id;
  
         if($this->is_normal_tag() && $ship_id > 0) {
@@ -337,7 +337,7 @@ class Tag {
     }
     
     
-    public function unaffect_ship_template(JULIET\api\Ships\models\ShipVariant $ship) {
+    public function unaffect_ship_template(\JULIET\api\Ships\models\ShipVariant $ship) {
         $ship_id = (integer) $ship->id;
         if($this->is_normal_tag()) {
             $sql = "DELETE FROM star_tags_af WHERE ship_variant_id='{$ship_id}' AND tag_id='{$this->id}'";
@@ -348,7 +348,7 @@ class Tag {
     /**
     * Affect to ship
     */
-    public function affect_ship_model(JULIET\api\Ships\models\Ship $ship) {
+    public function affect_ship_model(\JULIET\api\Ships\models\ShipType $ship) {
         $ship_id = (integer) $ship->id;
         
         if($this->is_normal_tag() && $ship_id > 0) {
@@ -364,7 +364,7 @@ class Tag {
     /**
     * Un affects current tag to the ship
     */
-    public function unaffect_ship_model(JULIET\api\Ships\models\Ship $ship) {
+    public function unaffect_ship_model(\JULIET\api\Ships\models\ShipType $ship) {
         $ship_id = (integer) $ship->id;
         if($this->is_normal_tag()) {
             $sql = "DELETE FROM star_tags_af WHERE shipType_id='{$ship_id}' AND tag_id='{$this->id}'";
