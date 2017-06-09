@@ -100,34 +100,37 @@ class Tags implements Routable {
                     if(Rights\Main::user_can("USER_CAN_SEE_JULIET")) $return = Tag::get_tags_from_ship_variant(new Ships\models\ShipVariant($_REQUEST['shipTemplate']));
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
+
                 case "affectShip":
                     $tag = new Tag($_REQUEST['id']);
-                    if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_REQUEST["id"])) $return = $tag->affect_ship(new Ships\models\Ship($_REQUEST['ship']));
+                    if(Rights\Main::user_can("USER_CAN_GIVE_TAG_TO_SHIP", 0, ["tag" => $_REQUEST['id'], "target_ship" => $_REQUEST['ship']])) $return = $tag->affect_ship(new Ships\models\Ship($_REQUEST['ship']));
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
                 case "unaffectShip":
                     $tag = new Tag($_REQUEST['id']);
-                    if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_REQUEST["id"])) $return = $tag->unaffect_ship(new Ships\models\Ship($_REQUEST['ship']));
+                    if(Rights\Main::user_can("USER_CAN_GIVE_TAG_TO_SHIP", 0, ["tag" => $_REQUEST['id'], "target_ship" => $_REQUEST['ship']])) $return = $tag->unaffect_ship(new Ships\models\Ship($_REQUEST['ship']));
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
+
                 case "affectShipTemplate":
                     $tag = new Tag($_REQUEST['id']);
-                    if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_REQUEST["id"])) $return = $tag->affect_ship_template(new Ships\models\ShipVariant($_REQUEST['shipTemplate']));
+                    if(Rights\Main::user_can("USER_CAN_GIVE_TAG_TO_SHIP_TEMPLATE", 0, ["tag" => $_REQUEST['id'], "target_ship_template" => $_REQUEST['shipTemplate']])) $return = $tag->affect_ship_template(new Ships\models\ShipVariant($_REQUEST['shipTemplate']));
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
                 case "unaffectShipTemplate":
                     $tag = new Tag($_REQUEST['id']);
-                    if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_REQUEST["id"])) $return = $tag->unaffect_ship_template(new Ships\models\ShipVariant($_REQUEST['shipTemplate']));
+                    if(Rights\Main::user_can("USER_CAN_GIVE_TAG_TO_SHIP_TEMPLATE", 0, ["tag" => $_REQUEST['id'], "target_ship_template" => $_REQUEST['shipTemplate']])) $return = $tag->unaffect_ship_template(new Ships\models\ShipVariant($_REQUEST['shipTemplate']));
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
+
                 case "affectShipModel":
                     $tag = new Tag($_REQUEST['id']);
-                    if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_REQUEST["id"])) $return = $tag->affect_ship_model(new Ships\models\ShipType($_REQUEST['shipModel']));
+                    if(Rights\Main::user_can("USER_CAN_GIVE_TAG_TO_SHIP_MODEL", 0, ["tag" => $_REQUEST['id'], "target_ship_model" => $_REQUEST['shipModel']])) $return = $tag->affect_ship_model(new Ships\models\ShipType($_REQUEST['shipModel']));
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
                 case "unaffectShipModel":
                     $tag = new Tag($_REQUEST['id']);
-                    if(Rights\Main::user_can("USER_CAN_ADMIN_TAG", 0, $_REQUEST["id"])) $return = $tag->unaffect_ship_model(new Ships\models\ShipType($_REQUEST['shipModel']));
+                    if(Rights\Main::user_can("USER_CAN_GIVE_TAG_TO_SHIP_MODEL", 0, ["tag" => $_REQUEST['id'], "target_ship_model" => $_REQUEST['shipModel']])) $return = $tag->unaffect_ship_model(new Ships\models\ShipType($_REQUEST['shipModel']));
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
 

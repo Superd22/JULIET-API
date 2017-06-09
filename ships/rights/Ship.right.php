@@ -29,6 +29,21 @@ class Ship {
     }
     
     /**
+     * If an user can affect/unaffect tags to a given ship
+     * (as in "yes, you're allowed to manipulate tags for this vessel")
+     * 
+     * User might still need additioanl rights to assigns specitif tags
+     *
+     * @param [type] $user
+     * @param [type] $tag
+     * @param [type] $ship
+     * @return void
+     */
+    public static function user_can_give_tags_to_ship($user, $ship) {
+        return self::user_can_edit_ship($user, $ship);
+    }
+
+    /**
      * If an user can admin all the variants of a given ship
      *
      * @param [type] $user

@@ -69,6 +69,12 @@ class Main {
         return \JULIET\api\Tags\Rights\Tag::user_can_admin_tag($user_id, $target);
       case "USER_CAN_GIVE_TAG_TO_USER":
         return \JULIET\api\Tags\Rights\Tag::user_can_give_tag_to_user($user_id, $target['tag'], $target['target_user']);
+      case "USER_CAN_GIVE_TAG_TO_SHIP":
+        return \JULIET\api\Tags\Rights\Tag::user_can_give_tag_to_ship($user_id, $target['tag'], $target['target_ship']);
+      case "USER_CAN_GIVE_TAG_TO_SHIP_MODEL":
+        return \JULIET\api\Tags\Rights\Tag::user_can_give_tag_to_ship_model($user_id, $target['tag'], $target['target_ship_model']);
+      case "USER_CAN_GIVE_TAG_TO_SHIP_TEMPLATE":
+        return \JULIET\api\Tags\Rights\Tag::user_can_give_tag_to_ship_template($user_id, $target['tag'], $target['target_ship_template']);
 
 
       /** SHIPS */
