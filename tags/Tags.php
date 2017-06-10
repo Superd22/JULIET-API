@@ -43,7 +43,7 @@ class Tags implements Routable {
                 * SINGLE TAG ADMINISTRATION
                 */
                 case "get":
-                //error_reporting(-1);
+                error_reporting(-1);
                     if(Rights\Main::user_can("USER_CAN_SEE_JULIET")) {
                         if(isset($_REQUEST['cat']) && !empty($_REQUEST['cat'])) $cat = (string) $_REQUEST['cat'];
                         else $cat = "tag";

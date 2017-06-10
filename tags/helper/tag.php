@@ -417,8 +417,8 @@ class Tag {
                     case "user":
                         $id = $child['user_id'];
                         $info = \JULIET\API\Common\Main::getUsersById($id);
-                        $img = $info['avatar'];
-                        $name = $info['username'];
+                        $img = $info->avatar;
+                        $name = $info->username;
                     break;
                     case "ship":
                         $id = $child['ship_id'];
