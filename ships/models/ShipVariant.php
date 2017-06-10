@@ -10,6 +10,7 @@ class ShipVariant {
     public $ship_id;
     public $ship_type_id;
     public $name;
+    public $crew_compliment;
     
     public function __construct($ship) {
         if($ship !== null && $ship['id'] !== null) {
@@ -20,6 +21,7 @@ class ShipVariant {
             $this->ship_id = (integer) $ship['ship_id'];
             $this->ship_type_id = (integer) $ship['ship_type_id'];
             $this->name    = $ship['name'];
+            $this->crew_compliment = $ship['crew_compliment'];
         }
         elseif($ship !== null && is_numeric($ship) && (integer) $ship > 0) {
             $this->id      = (integer) $ship;

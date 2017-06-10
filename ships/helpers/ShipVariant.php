@@ -100,7 +100,7 @@ class ShipVariant {
 
         if($variant->id == 0) return self::add($variant);
 
-        $sql = "UPDATE FROM star_ships_variant SET
+        $sql = "UPDATE star_ships_variant SET
         name = '{$mysqli->real_escape_string($variant->name)}'
         WHERE id='{$variant->id}'";
         $query = $mysqli->query($sql);
@@ -157,10 +157,16 @@ class ShipVariant {
         $sql = "SELECT * FROM star_ships_variant WHERE id={$this->id} LIMIT 1";
         $query = $mysqli->query($sql);
         $ship = $query->fetch_assoc();
+
+        self::augment_variant($ship);
         
         return new \JULIET\api\Ships\models\ShipVariant($ship);
     }
     
+    private static function augment_variant(&$variant) {
+        $variant['crew_compliment'] = CrewCompliment::get_crew_compliment_of_variant($variant['id']);
+    }
+
     /**
     * Helper function to get the variants of a given ship instance
     *
@@ -176,6 +182,7 @@ class ShipVariant {
     
         $variants = [];
         while($variant = $query->fetch_assoc()) {
+            self::augment_variant($variant);
             $variants[] = new \JULIET\api\Ships\models\ShipVariant($variant);
         }
         

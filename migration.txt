@@ -1,0 +1,35 @@
+CREATE TABLE `starcitisqltest`.`star_ships_variant_crew` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `template_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
+  `job_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  INDEX `templateid_idx` (`template_id` ASC),
+  CONSTRAINT `templateid`
+    FOREIGN KEY (`template_id`)
+    REFERENCES `starcitisqltest`.`star_ships_variant` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE);
+
+CREATE TABLE `starcitisqltest`.`star_ships_variant_positions` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  `template_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `template_id_idx` (`template_id` ASC),
+  INDEX `template_unicity` (`id` ASC, `template_id` ASC),
+  CONSTRAINT `template_id`
+    FOREIGN KEY (`template_id`)
+    REFERENCES `starcitisqltest`.`star_ships_variant` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE);
+
+ALTER TABLE `starcitisqltest`.`star_ships_variant_crew` 
+ADD INDEX `position_idx` (`job_id` ASC);
+ALTER TABLE `starcitisqltest`.`star_ships_variant_crew` 
+ADD CONSTRAINT `position`
+  FOREIGN KEY (`job_id`)
+  REFERENCES `starcitisqltest`.`star_ships_variant_positions` (`id`)
+  ON DELETE NO ACTION
+  ON UPDATE NO ACTION;

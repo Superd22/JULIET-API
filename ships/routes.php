@@ -4,5 +4,6 @@
     
     $r3->any("/Ships/*", 'JULIET\api\Ships');
     $r3->any("/Ships/Template/*", 'JULIET\api\ShipTemplates');
+    $r3->any("/Ships/Template/Crew/*", 'JULIET\api\ShipCrew');
     $r3->any("/Ships/Model/*", 'JULIET\api\ShipType');
 ?>

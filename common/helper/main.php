@@ -2,6 +2,7 @@
 
 use JULIET\api\Phpbb;
 use JULIET\API\db;
+
 class Main {
 
   const GROUP_GO = 17;
@@ -22,22 +23,30 @@ class Main {
       $sql = "SELECT username, user_id FROM testfo_users, star_fleet  WHERE username COLLATE UTF8_GENERAL_CI LIKE '%".$user."%' 
       AND user_id = id_forum";
 
-      $q = $db->query($sql);
+      $found = [];
 
-      return $q->fetch_all(MYSQLI_ASSOC);
+      $q = $db->query($sql);
+      while($user = $q->fetch_assoc()) {
+        $found[] = new Model\BaseUserInfo($user);
+      }
+
+      return $found;
   }
 
     private static function fetchUserById($id) {
-            $myqsli = db::get_mysqli();
-            $id = (integer) $id;
+        $myqsli = db::get_mysqli();
+        $id = (integer) $id;
 
-            $sql = "SELECT username, user_id as id FROM testfo_users WHERE user_id = '{$id}' LIMIT 1";
-            $q = $myqsli->query($sql);
+        $sql = "SELECT username, user_id as id FROM testfo_users WHERE user_id = '{$id}' LIMIT 1";
+        $q = $myqsli->query($sql);
 
-            $user = $q->fetch_assoc();
-            $user['avatar'] = Main::get_user_avatar($user['id']);
-            if($user["username"]) return $user;
-            else return false;
+        $user = $q->fetch_assoc();
+        $user['avatar'] = Main::get_user_avatar($user['id']);
+
+        $rUser = new Model\BaseUserInfo($user);
+
+        if($rUser->username) return $rUser;
+        else return false;
     }
 
     public static function getUsersById($ids) {
