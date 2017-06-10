@@ -152,13 +152,13 @@ class ShipVariant {
         return $return;
     }
     
-    public function get_info() {
+    public function get_info($dont_augment = false) {
         $mysqli = db::get_mysqli();
         $sql = "SELECT * FROM star_ships_variant WHERE id={$this->id} LIMIT 1";
         $query = $mysqli->query($sql);
         $ship = $query->fetch_assoc();
 
-        self::augment_variant($ship);
+        if(!$dont_augment) self::augment_variant($ship);
         
         return new \JULIET\api\Ships\models\ShipVariant($ship);
     }

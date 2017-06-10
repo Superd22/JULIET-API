@@ -434,6 +434,13 @@ class Tag {
                         $img = $info->ico;
                         $name = $info->name;
                     break;
+                    case "ship_variant":
+                        $id = $child['ship_variant_id'];
+                        $ship = new \JULIET\api\Ships\helpers\ShipVariant($id);
+                        $info = $ship->get_info(true);
+                        $name = $info->name;
+                        $img = $info->ico;
+                    break;
                 }
 
                 if($id != null)
