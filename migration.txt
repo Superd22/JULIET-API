@@ -33,3 +33,13 @@ ADD CONSTRAINT `position`
   REFERENCES `starcitisqltest`.`star_ships_variant_positions` (`id`)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION;
+
+ALTER TABLE `starcitisqltest`.`star_ships_variant_positions` 
+ADD COLUMN `parent` INT NULL DEFAULT 0 AFTER `template_id`,
+ADD INDEX `ah_idx` (`parent` ASC);
+ALTER TABLE `starcitisqltest`.`star_ships_variant_positions` 
+ADD CONSTRAINT `parent_id`
+  FOREIGN KEY (`parent`)
+  REFERENCES `starcitisqltest`.`star_ships_variant_positions` (`id`)
+  ON DELETE CASCADE
+  ON UPDATE CASCADE;
