@@ -27,6 +27,7 @@ class Hangar {
     * @return Hangar a populated hangar object
     */
     public static function getPlayerHangar($player_id = 0) {
+        error_reporting(-1);
         $player_id = Rights::handle_user_id((integer) $player_id);
         $mysqli = db::get_mysqli();
         

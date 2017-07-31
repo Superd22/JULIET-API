@@ -34,10 +34,10 @@ class CrewCompliment {
         $mysqli = db::get_mysqli();
         
         $sql = "SELECT * FROM star_ships_variant_positions WHERE template_id='{$variant_id}'";
-        $q = $mysqli->query($sql);
+        $query = $mysqli->query($sql);
         
         $positions = [];
-        while($crew = $q->fetch_assoc()) {
+        if($query) while($crew = $query->fetch_assoc()) {
             $positions[] = new Models\CrewPosition($crew);
         }
         
@@ -52,7 +52,7 @@ class CrewCompliment {
         $q = $mysqli->query($sql);
         
         $crew_members = [];
-        while($crew = $q->fetch_assoc()) {
+        if($q) while($crew = $q->fetch_assoc()) {
             if($crew['user_id']) {
                 $crew['user'] = \JULIET\API\Common\Main::getUsersById($crew['user_id']);
                 $crew_members[] = new Models\CrewMember($crew);
