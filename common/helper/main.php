@@ -78,7 +78,7 @@ class Main {
     public static function getPayPalAmount() {
         require_once(__DIR__."/../vendors/paypal.api.php");
         
-        $return = json_decode(file_get_contents("../cache/paypal.txt"));
+        $return = json_decode(file_get_contents(__DIR__."/../cache/paypal.txt"));
         if(!$return || time() - $return->time > 24*3600) {
             $login = paypalCredentials();
             $paypal = new \Paypal($login['username'], $login['password'], $login['certificate']);
@@ -90,7 +90,7 @@ class Main {
             "count" => (integer) $return["L_AMT0"]
             );
             
-            file_put_contents("cache/paypal.txt", json_encode($return));
+            file_put_contents(__DIR__."/../cache/paypal.txt", json_encode($return));
         }
         
         return $return;
