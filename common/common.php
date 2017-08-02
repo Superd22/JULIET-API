@@ -24,13 +24,16 @@ class Common implements Routable {
     public function switch_get($where) {
         switch($where) {
             case "UserSearch":
-                return Main::searchUser($_GET["f"]);
-            break;
+                if(Rights\Main::user_can("USER_CAN_SEE_JULIET")) return Main::searchUser($_GET["f"]);
             case "getUserById":
-                return Main::getUsersById(explode(',',$_GET["ids"]));
-            break;
+                if(Rights\Main::user_can("USER_CAN_SEE_JULIET")) return Main::getUsersById(explode(',',$_GET["ids"]));
+            case "paypal":
+            error_reporting(-1);
+                if(Rights\Main::user_can("USER_CAN_SEE_JULIET")) return Main::getPayPalAmount();
 
         }
+
+        throw new \Exception("USER_NO_RIGHTS"); 
     }
 }
 

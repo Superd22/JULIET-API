@@ -6,9 +6,9 @@ use JULIET\api\Response;
 use JULIET\api\Rights\Main as Rights;
 
 class Group {
-    protected $id;
-    protected $type, $nom, $logo, $ban, $members, $max_members, $recruit;
-    protected $abr, $description, $perm, $subsquad, $pending;
+    public $id;
+    public $type, $nom, $logo, $ban, $members, $max_members, $recruit;
+    public $abr, $description, $perm, $subsquad, $pending;
 
     function __construct($id) {
         if(is_numeric($id)) $this->id = $id;
