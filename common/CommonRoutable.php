@@ -15,6 +15,7 @@ class CommonRoutable implements Routable {
     }
     
     public function get($filename) {
+error_reporting(-1);
         $method_name = "get_".$filename;
         
         if(strpos($filename, "php") !== false) {
@@ -22,7 +23,7 @@ class CommonRoutable implements Routable {
         }
         else {
             try {
-                if(method_exists($this, $method_name)) call_user_func([$this,$method_name],$filename);
+                if(method_exists($this, $method_name)) $this->display_return(call_user_func([$this,$method_name],$filename));
                 else $this->display_return($this->switch_get($filename));
                 }
             catch(\Exception $e) {

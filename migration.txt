@@ -43,3 +43,27 @@ ADD CONSTRAINT `parent_id`
   REFERENCES `starcitisqltest`.`star_ships_variant_positions` (`id`)
   ON DELETE CASCADE
   ON UPDATE CASCADE;
+
+
+
+### GROUPS ####
+
+
+ALTER TABLE `starcitisqltest`.`star_squad` 
+CHANGE COLUMN `type` `type` INT(3) NULL ,
+CHANGE COLUMN `logo` `logo` TEXT NULL ,
+CHANGE COLUMN `members` `members` TEXT NULL ,
+CHANGE COLUMN `max_members` `max_members` INT(3) NULL DEFAULT '0' ,
+CHANGE COLUMN `recruit` `recruit` INT(1) NULL DEFAULT '0' ,
+CHANGE COLUMN `abr` `abr` TEXT NULL ,
+CHANGE COLUMN `description` `description` TEXT NULL ,
+CHANGE COLUMN `perm` `perm` VARCHAR(1500) NULL ,
+CHANGE COLUMN `subsquad` `subsquad` INT(3) NULL DEFAULT '0' ,
+CHANGE COLUMN `pending` `pending` TINYINT(1) NULL DEFAULT '0' ,
+CHANGE COLUMN `principale` `principale` VARCHAR(255) NULL DEFAULT '' ,
+CHANGE COLUMN `secondaire` `secondaire` VARCHAR(255) NULL DEFAULT '' ,
+CHANGE COLUMN `p_members` `p_members` VARCHAR(600) NULL DEFAULT '' ,
+CHANGE COLUMN `RP` `RP` TINYINT(1) NULL DEFAULT '2' ,
+CHANGE COLUMN `TS` `TS` TINYINT(1) NULL DEFAULT '2' ,
+CHANGE COLUMN `SPE` `SPE` TINYINT(1) NULL DEFAULT '2' ,
+CHANGE COLUMN `ORIEN` `ORIEN` TINYINT(1) NULL DEFAULT '2' ;

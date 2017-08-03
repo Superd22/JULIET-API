@@ -3,34 +3,16 @@
 use Respect\Rest\Routable;
 use JULIET\api\user;
 use JULIET\api\Response;
+use JULIET\api\CommonRoutable;
 
-class Groups implements Routable {
+class Groups extends CommonRoutable {
     
     function __construct() {
     }
-    
-    public function post($filename) {
-        $this->get($filename);
+
+    public function get_LIST_GROUPS() {
+        return helper\Main::get_all_groups();
     }
-    
-    public function get($filename) {
-        try {
-            $return = $this->switch_get($filename);
-        }
-        catch(\Exception $e) {
-            if($e->getCode() > 0) print_r(Response::json_response($return, $e->getMessage()));
-            else print_r(Response::json_error($e->getMessage()));
-                return;
-        }
-        print_r(Response::json_response($return));
-    }
-    
-    private function switch_get($filename) {
-        switch($filename) {
-            case "LIST_GROUPS":
-                return helper\Main::get_all_groups();
-            break;
-        }
-    }
+   
 }
 ?>
