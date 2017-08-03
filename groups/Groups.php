@@ -1,8 +1,5 @@
 <?php namespace JULIET\api\groups;
 
-require_once(__DIR__."/helper/group.php");
-require_once(__DIR__."/helper/main.php");
-
 use Respect\Rest\Routable;
 use JULIET\api\user;
 use JULIET\api\Response;
