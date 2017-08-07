@@ -127,6 +127,7 @@ class Tags implements Routable {
                     if(Rights\Main::user_can("USER_CAN_GIVE_TAG_TO_SHIP_MODEL", 0, ["tag" => $_REQUEST['id'], "target_ship_model" => $_REQUEST['shipModel']])) $return = $tag->affect_ship_model(new Ships\models\ShipType($_REQUEST['shipModel']));
                     else throw new \Exception("USER_NO_RIGHTS");
                 break;
+                
                 case "unaffectShipModel":
                     $tag = new Tag($_REQUEST['id']);
                     if(Rights\Main::user_can("USER_CAN_GIVE_TAG_TO_SHIP_MODEL", 0, ["tag" => $_REQUEST['id'], "target_ship_model" => $_REQUEST['shipModel']])) $return = $tag->unaffect_ship_model(new Ships\models\ShipType($_REQUEST['shipModel']));

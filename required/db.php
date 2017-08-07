@@ -2,6 +2,11 @@
 
     class db {
 
+        /**
+         * MYSQLi instance
+         *
+         * @var mysqli
+         */
         private static $_mysqli;
 
         private function __construct() {
@@ -11,6 +16,11 @@
             mysqli_set_charset(self::$_mysqli, "utf8");
         }
 
+        /**
+         * Get mysqli instance
+         *
+         * @return mysqli
+         */
         public static function get_mysqli() {
             if(is_null(self::$_mysqli)) new db();
 

@@ -4,20 +4,26 @@ use JULIET\api\Phpbb;
 use JULIET\api\db;
 use JULIET\api\Response;
 use JULIET\api\Rights\Main as Rights;
+use JULIET\API\Common\Model\JulietModel;
 
-class Group {
+class Group extends JulietModel {
     public $id;
     public $type, $nom, $logo, $ban, $members, $max_members, $recruit;
     public $abr, $description, $perm, $subsquad, $pending;
-
-    function __construct($id) {
-        if(is_numeric($id)) $this->id = $id;
-        elseif(isset($id['id']) && isset($id["nom"])) 
-            foreach($id as $pp => $val)
-                $this->{$pp} = $val; 
-    }
-
     
+    protected $_type = [
+        'id' => 'integer',
+        'recruit' => 'boolean',
+    ];
+    
+    function __construct($id) {
+        if(is_numeric($id)) $id = ['id' => $id];
+        parent::__construct($id);
 
-
+        if(!$this['id'] || !($this['id'] > 0)) throw new \Exception("Wrong ID for GroupModel");
+    }
+    
+    
+    
+    
 }

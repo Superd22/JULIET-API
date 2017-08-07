@@ -24,12 +24,12 @@ $r3->any("/", function() {
 
 
 require_once("common/CommonRoutable.php");
+require_once("common/routes.php"); 
 require_once("rights/routes.php");
 require_once("tags/routes.php");
 require_once("ts3/routes.php");
 require_once("calendar/routes.php");
 require_once("user/routes.php");
 require_once("ships/routes.php");
-require_once("groups/routes.php");
-require_once("common/routes.php");    
+require_once("groups/routes.php");   
 ?>

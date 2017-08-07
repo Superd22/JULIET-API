@@ -441,6 +441,8 @@ class Tag {
                         $name = $info->name;
                         $img = $info->ico;
                     break;
+                    case "group":
+                    break;
                 }
 
                 if($id != null)
@@ -459,6 +461,7 @@ class Tag {
         if(!empty($child['ship_id'])) return "ship";
         if(!empty($child['shipType_id'])) return "ship_type";
         if(!empty($child['ship_variant_id'])) return "ship_variant";
+        if(!empty($child['group_id'])) return "group";
         if(!empty($child['ressource_id'])) return "ressource";
     }
     
