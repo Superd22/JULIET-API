@@ -14,10 +14,8 @@ class CommonRoutable implements Routable {
     public function __construct() {
     }
     
-    public function get($filename) {
-error_reporting(-1);
+    public function get($filename = "") {
         $method_name = "get_".$filename;
-        
         if(strpos($filename, "php") !== false) {
             require_once(__DIR__."/legacy/".str_replace("php", ".php", $filename));
         }
@@ -32,7 +30,7 @@ error_reporting(-1);
         }
     }
     
-    public function post($filename) {
+    public function post($filename = "") {
         $_REQUEST = array_merge($_GET, json_decode(file_get_contents('php://input'), true));
         if(strpos($filename, "php") !== false) {
             require_once(__DIR__."/legacy/".str_replace("php", ".php", $filename));

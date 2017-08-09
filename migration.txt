@@ -98,3 +98,26 @@ CREATE TABLE `starcitisqltest`.`star_squad_fn_af` (
     REFERENCES `starcitisqltest`.`star_squad_fn` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE);
+
+CREATE TABLE `starcitisqltest`.`star_squad_af` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `group_id` INT NOT NULL,
+  `user_id` INT NULL,
+  `ship_id` INT NULL,
+  `ressource_id` INT NULL,
+  `validated` INT(1) UNSIGNED NOT NULL DEFAULT 0
+  UNIQUE INDEX `user_group` (`group_id` ASC, `user_id` ASC),
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `ship_group` (`group_id` ASC, `ship_id` ASC),
+  UNIQUE INDEX `ressource_group` (`ressource_id` ASC, `group_id` ASC),
+  INDEX `ship_idx` (`ship_id` ASC),
+  CONSTRAINT `ship`
+    FOREIGN KEY (`ship_id`)
+    REFERENCES `starcitisqltest`.`star_ship` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `group`
+    FOREIGN KEY (`group_id`)
+    REFERENCES `starcitisqltest`.`star_squad` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE);

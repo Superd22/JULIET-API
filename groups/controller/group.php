@@ -30,6 +30,23 @@ class Group {
         return $this->db->insert_id;
     }
 
+    public function update_legacy() {
+        $sql = "SELECT id, members, p_members FROM star_squad";
+        
+        $q = $this->db->query($sql);
+        while($g = $q->fetch_assoc()) {
+            $members = explode(",", $g['members']);
+            $p_members = explode(",", $g['p_members']);
+            foreach($members as $member){
+                $this->db->query(" INSERT INTO star_squad_af (group_id, user_id, validated) 
+                VALUES ({$g['id']},{$member},1)");}
+
+            foreach($p_members as $member)
+                $this->db->query(" INSERT INTO star_squad_af (group_id, user_id) 
+                VALUES ({$g['id']},{$member})");
+        }
+    }
+
     public function update(AGroup $group) {
 
     }
@@ -55,8 +72,51 @@ class Group {
         $query = $this->db->query($sql);
 
         if($this->db->error) throw new \Exception($this->db->error);
+        
+        $group = new AGroup($query->fetch_assoc());
+        $group['affectations'] = $this->get_group_affected($group_id);
 
-        return new AGroup($query->fetch_assoc());
+        return $group;
+    }
+    
+    /**
+     * Returns all the things affected to a given group
+     * (users + ship + ressources)
+     *
+     * @param integer $group_id target group
+     * @return [users => user[], ships => ship[], ressources => ressource[]]
+     */
+    public function get_group_affected($group_id) {
+        $group_id = (integer) $group_id;
+        $users = $ships = $ressources = [];
+
+        // Get all the affectations for this group
+        $sql = "SELECT * from star_squad_af WHERE group_id={$group_id}";
+        $q = $this->db->query($sql);
+
+        while($affected_thing = $q->fetch_assoc()) {
+
+            if($affected_thing['user_id'] > 0) {
+                $users[] = \JULIET\API\Common\Main::getUsersById($affected_thing['user_id']);
+            }
+
+            else if($affected_thing['ship_id'] > 0) {
+                $ship = new \JULIET\api\Ships\helpers\Ship($id);
+                $ship->get_info();
+                $ships[] = $ship->get_info();
+            }
+
+            else if($affected_thing['ressource_id'] > 0) {
+                /**
+                 * @todo 
+                 */
+            }
+
+            // If we can't determine what type of affectation this is
+            else throw new \Exception("undefined affectation type in get_group_affected()");
+        }
+
+        return ["users" => $users, "ships" => $ships, "ressources" => $ressources];
     }
 
     public function get_user_group($user) {

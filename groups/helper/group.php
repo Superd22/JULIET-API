@@ -10,6 +10,7 @@ class Group extends JulietModel {
     public $id;
     public $type, $nom, $logo, $ban, $members, $max_members, $recruit;
     public $abr, $description, $perm, $subsquad, $pending;
+    public $affectations;
     
     protected $_type = [
         'id' => 'integer',

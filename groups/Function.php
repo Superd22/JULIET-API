@@ -6,27 +6,30 @@ use JULIET\api\Response;
 use JULIET\api\CommonRoutable;
 use JULIET\api\Rights\main as Rights;
 use JULIET\api\groups\controller\Group as GroupController;
+use JULIET\api\groups\controller\GroupFunction as GroupFunctionController;
 
-class Group extends CommonRoutable {
+
+class GroupFunction extends CommonRoutable {
     
     private $group;
 
     function __construct() {
         $this->group = new GroupController();
+        $this->function = new GroupFunctionController();
     }
 
     public function get_view() {
         if(!Rights::user_can("USER_IS_SIBYLLA")) throw new \Exception("USER_NO_RIGHTS");
-        if(!isset($_REQUEST['groupId'])) throw new \Exception("NO_GROUP_ID");
-        return $this->group->get_group($_REQUEST['groupId']);
+        if(!isset($_REQUEST['fnId'])) throw new \Exception("NO_FUNCTION_ID");
+        return $this->function->view($_REQUEST['fnId']);
     }
-
+   
     public function post_update() {
 
     }
 
     public function post_affectUser() {
-
+        
     }
 
     public function post_deAffectUser() {
