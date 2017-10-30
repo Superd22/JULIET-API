@@ -38,6 +38,7 @@ class JulietModel implements \ArrayAccess, \JsonSerializable  {
         if($this->_type && isset($this->_type[$name])) settype($value, $this->_type[$name]);
         // Set the model
         $this->_model[$name] = $value;
+        $this->{$name} = $value;
     }
     
     public function __get($name) {

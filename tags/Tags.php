@@ -9,6 +9,7 @@ require_once(__DIR__."/rights/Tag.rights.php");
 
 use Respect\Rest\Routable;
 use JULIET\api\Tags\helper\tag;
+use JULIET\api\Tags\helper\tagShip;
 //use JULIET\API\Rights\Main as Rights;
 
 class Tags implements Routable {
@@ -48,7 +49,10 @@ class Tags implements Routable {
                         else $cat = "tag";
                         switch($cat) {
                             case "tag":
-                                $return = Tag::get_tag_info($_REQUEST["name"], $_REQUEST['all']);
+                                $return = Tag::get_tag_info($_REQUEST["name"],(boolean) $_REQUEST['all']);
+                            break;
+                            case "ship":
+                                $return = TagShip::get_tag_info($_REQUEST["name"],(boolean) $_REQUEST['all']);
                             break;
                         }
                     }

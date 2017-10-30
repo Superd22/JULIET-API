@@ -37,7 +37,58 @@ class TagShip extends Tag {
         $ct = $dada->fetch_assoc();
         
         $this->count = $ct["COUNT(*)"];
-
+        
         return $this->count;
+    }
+    
+    /**
+    * Get all the info about this tag + who has it
+    * @param $tag_name the name of the tag to fetch
+    * @param $all get all type of ressources (only user if false)
+    * @return a Tag with ressources info, or null.
+    */
+    public static function get_tag_info($tag_name, $all = false) {
+        if(!is_string($tag_name) || empty($tag_name)) throw new \Exception("NO VALID TAG NAME");
+        $mysqli =  db::get_mysqli();
+        $tags = $mysqli->query('SELECT * FROM star_ship WHERE name="'.$mysqli->real_escape_string($tag_name).'" LIMIT 1');
+        $tag = $tags->fetch_assoc();
+        
+        // Construction du "TAG" afférant au vaisseau
+        $oneship = array("id" => $tag['id'],"name" => $tag['name'],"img" => $tag['ico'],"cat" =>"ship");
+        // Holds our basics information.
+        $rTag = new TagShip($oneship);
+
+        // Get our ressources
+        $rTag->fetch_owner_of_this($all);
+        
+        return $rTag;
+    }
+
+    /**
+     * Fetch the owners of this ship
+     *
+     * @param boolean $all
+     * @return void
+     */
+    public function fetch_owner_of_this($all = false) {
+        $mysqli =  db::get_mysqli();
+        $own = $mysqli->query('SELECT * FROM star_ships WHERE type_id="'.$this->id.'" LIMIT 1');
+        
+        while($owner = $own->fetch_assoc()) {
+            // Make sure we're recognized as an user
+            $userPacket = array_slice($owner, 0);
+            $userPacket['user_id'] = $userPacket['owner'];
+            // declare this user as a target for this tag
+            $this->declareTarget($userPacket, $all);
+
+            if($all) {
+                // Make sure we're recognized as a ship instance
+                $shipPacket = array_slice($owner, 0);
+                $shipPacket['ship_id'] = $shipPacket['id'];
+                // declare this ship instance as a target for this tag
+                $this->declareTarget($shipPacket, $all);
+            }
+
+        }
     }
 }

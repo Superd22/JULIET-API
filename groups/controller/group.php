@@ -73,8 +73,14 @@ class Group {
 
         if($this->db->error) throw new \Exception($this->db->error);
         
-        $group = new AGroup($query->fetch_assoc());
-        $group['affectations'] = $this->get_group_affected($group_id);
+        $group = self::getExtendedGroupFromBaseData($query->fetch_assoc());
+
+        return $group;
+    }
+
+    public function getExtendedGroupFromBaseData($baseData) {
+        $group = new AGroup($baseData);
+        $group['affectations'] = $this->get_group_affected($group['id']);
 
         return $group;
     }
@@ -94,10 +100,11 @@ class Group {
         $sql = "SELECT * from star_squad_af WHERE group_id={$group_id}";
         $q = $this->db->query($sql);
 
+        if($q)
         while($affected_thing = $q->fetch_assoc()) {
-
+            
             if($affected_thing['user_id'] > 0) {
-                $users[] = \JULIET\API\Common\Main::getUsersById($affected_thing['user_id']);
+                $users[] = GroupAffectation::getUserAffectation($affected_thing);
             }
 
             else if($affected_thing['ship_id'] > 0) {

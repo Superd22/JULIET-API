@@ -12,18 +12,19 @@ class Main {
         $lm = "";
         if($limit >= 0) $lm = "LIMIT {$offset}, {$limit}";
         $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM star_squad {$lm}";
-
         $d = $mysqli->query($sql);
+
+        $f = $mysqli->query("SELECT FOUND_ROWS() AS count");
+        $count = $f->fetch_assoc();
+
         $r = array();
+        $gController = new \JULIET\api\groups\controller\Group();
         while($gp = $d->fetch_assoc()) {
-            $r[] = new Group($gp);
+            $r[] = $gController->getExtendedGroupFromBaseData($gp);
         }
 
         $d->free_result();
-        $d = $mysqli->query("SELECT FOUND_ROWS() AS count");
-        $count = $d->fetch_assoc();
-
-
+        $f->free_result();
 
         return array('count' => $count['count'], 'data' => $r);
     }

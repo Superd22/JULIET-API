@@ -410,46 +410,57 @@ class Tag {
         $query = $mysqli->query($sql);
 
         while($child = $query->fetch_assoc()) {
-            $id = $type = $img = $name = null;
-            if($this->should_add_child($child, $all)) {
-                $type = $this->type_of_child($child);
-                switch($type) {
-                    case "user":
-                        $id = $child['user_id'];
-                        $info = \JULIET\API\Common\Main::getUsersById($id);
-                        $img = $info->avatar;
-                        $name = $info->username;
-                    break;
-                    case "ship":
-                        $id = $child['ship_id'];
-                        $ship = new \JULIET\api\Ships\helpers\Ship($id);
-                        $info = $ship->get_info();
-                        $img = $info->ico;
-                        $name = $info->name;
-                    break;
-                    case "ship_type":
-                        $id = $child['shipType_id'];
-                        $ship = new \JULIET\api\Ships\helpers\ShipType($id);
-                        $info = $ship->get_info();
-                        $img = $info->ico;
-                        $name = $info->name;
-                    break;
-                    case "ship_variant":
-                        $id = $child['ship_variant_id'];
-                        $ship = new \JULIET\api\Ships\helpers\ShipVariant($id);
-                        $info = $ship->get_info(true);
-                        $name = $info->name;
-                        $img = $info->ico;
-                    break;
-                    case "group":
-                    break;
-                }
-
-                if($id != null)
-                $this->targets[] = new \JULIET\api\Tags\model\TagTarget($id, $info, $type, $img, $name);
-            }
+            $this->declareTarget($child, $all);
         }
 
+    }
+
+    /**
+     * Declare the child as a target for this tag
+     *
+     * @param mixed $child the child fetched from the db
+     * @param boolean $allowAll allow all types of child (false will only allow users)
+     * @return void
+     */
+    protected function declareTarget($child, $allowAll = false) {
+        $id = $type = $img = $name = null;
+        if($this->should_add_child($child, $allowAll)) {
+            $type = $this->type_of_child($child);
+            switch($type) {
+                case "user":
+                    $id = $child['user_id'];
+                    $info = \JULIET\API\Common\Main::getUsersById($id);
+                    $img = $info->avatar;
+                    $name = $info->username;
+                break;
+                case "ship":
+                    $id = $child['ship_id'];
+                    $ship = new \JULIET\api\Ships\helpers\Ship($id);
+                    $info = $ship->get_info();
+                    $img = $info->ico;
+                    $name = $info->name;
+                break;
+                case "ship_type":
+                    $id = $child['shipType_id'];
+                    $ship = new \JULIET\api\Ships\helpers\ShipType($id);
+                    $info = $ship->get_info();
+                    $img = $info->ico;
+                    $name = $info->name;
+                break;
+                case "ship_variant":
+                    $id = $child['ship_variant_id'];
+                    $ship = new \JULIET\api\Ships\helpers\ShipVariant($id);
+                    $info = $ship->get_info(true);
+                    $name = $info->name;
+                    $img = $info->ico;
+                break;
+                case "group":
+                break;
+            }
+
+            if($id != null)
+            $this->targets[] = new \JULIET\api\Tags\model\TagTarget($id, $info, $type, $img, $name);
+        }
     }
 
     private function should_add_child($child, $all) {

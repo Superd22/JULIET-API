@@ -44,8 +44,7 @@ class Main {
         $user['avatar'] = Main::get_user_avatar($user['id']);
         
         $rUser = new Model\BaseUserInfo($user);
-        
-        if($rUser->username) return $rUser;
+        if($rUser['username']) return $rUser;
         else return false;
         }
     

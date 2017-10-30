@@ -6,6 +6,7 @@ require_once(__DIR__."/model/function.php");
 require_once(__DIR__."/model/function_affectation.php");
 
 require_once(__DIR__."/controller/group.php");
+require_once(__DIR__."/controller/affectation.php");
 require_once(__DIR__."/controller/function.php");
 
 require_once(__DIR__."/Groups.php");
