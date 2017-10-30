@@ -72,7 +72,7 @@ class TagShip extends Tag {
      */
     public function fetch_owner_of_this($all = false) {
         $mysqli =  db::get_mysqli();
-        $own = $mysqli->query('SELECT * FROM star_ships WHERE type_id="'.$this->id.'" LIMIT 1');
+        $own = $mysqli->query('SELECT * FROM star_ships WHERE type_id='.$this->id);
         
         while($owner = $own->fetch_assoc()) {
             // Make sure we're recognized as an user
